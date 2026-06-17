@@ -18,10 +18,6 @@
         "active": {
           "type": "boolean"
         },
-        "backendStoreDriver": {
-          "description": "Deprecated:Replaced by field `dataEngine`.",
-          "type": "string"
-        },
         "backupVolume": {
           "type": "string"
         },
@@ -38,15 +34,12 @@
         "disableFrontend": {
           "type": "boolean"
         },
-        "engineImage": {
-          "description": "Deprecated: Replaced by field `image`.",
-          "type": "string"
-        },
         "frontend": {
           "enum": [
             "blockdev",
             "iscsi",
             "nvmf",
+            "ublk",
             ""
           ],
           "type": "string"
@@ -59,6 +52,12 @@
         },
         "nodeID": {
           "type": "string"
+        },
+        "rebuildConcurrentSyncLimit": {
+          "description": "RebuildConcurrentSyncLimit controls the maximum number of file synchronization operations that can run\nconcurrently during a single replica rebuild.\nIt is determined by the global setting or the volume spec field with the same name.",
+          "maximum": 5,
+          "minimum": 0,
+          "type": "integer"
         },
         "replicaAddressMap": {
           "additionalProperties": {
@@ -84,6 +83,14 @@
         "snapshotMaxSize": {
           "format": "int64",
           "type": "string"
+        },
+        "ublkNumberOfQueue": {
+          "description": "ublkNumberOfQueue controls the number of queues for ublk frontend.",
+          "type": "integer"
+        },
+        "ublkQueueDepth": {
+          "description": "ublkQueueDepth controls the depth of each queue for ublk frontend.",
+          "type": "integer"
         },
         "unmapMarkSnapChainRemovedEnabled": {
           "type": "boolean"
@@ -267,14 +274,30 @@
           "nullable": true,
           "type": "object"
         },
+        "rebuildConcurrentSyncLimit": {
+          "description": "RebuildConcurrentSyncLimit controls the maximum number of file synchronization operations that can run\nconcurrently during a single replica rebuild.\nIt is determined by the global setting or the volume spec field with the same name.",
+          "minimum": 0,
+          "type": "integer"
+        },
         "rebuildStatus": {
           "additionalProperties": {
             "properties": {
+              "appliedRebuildingMBps": {
+                "format": "int64",
+                "type": "integer"
+              },
               "error": {
                 "type": "string"
               },
               "fromReplicaAddress": {
+                "description": "Deprecated. We are now using FromReplicaAddressList to list all source replicas.",
                 "type": "string"
+              },
+              "fromReplicaAddressList": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
               },
               "isRebuilding": {
                 "type": "boolean"
@@ -398,11 +421,21 @@
         "started": {
           "type": "boolean"
         },
+        "starting": {
+          "type": "boolean"
+        },
         "storageIP": {
           "type": "string"
         },
+        "ublkID": {
+          "format": "int32",
+          "type": "integer"
+        },
         "unmapMarkSnapChainRemovedEnabled": {
           "type": "boolean"
+        },
+        "uuid": {
+          "type": "string"
         }
       },
       "type": "object",

@@ -21,15 +21,27 @@
         "accessMode": {
           "enum": [
             "rwo",
+            "rwop",
             "rwx"
           ],
           "type": "string"
         },
-        "backendStoreDriver": {
-          "description": "Deprecated:Replaced by field `dataEngine`.'",
-          "type": "string"
-        },
         "backingImage": {
+          "type": "string",
+          "x-kubernetes-validations": [
+            {
+              "message": "BackingImage is immutable",
+              "rule": "self == oldSelf"
+            }
+          ]
+        },
+        "backupBlockSize": {
+          "description": "BackupBlockSize indicate the block size to create backups. The block size is immutable.",
+          "enum": [
+            "2097152",
+            "16777216"
+          ],
+          "format": "int64",
           "type": "string"
         },
         "backupCompressionMethod": {
@@ -37,6 +49,18 @@
             "none",
             "lz4",
             "gzip"
+          ],
+          "type": "string"
+        },
+        "backupTargetName": {
+          "description": "The backup target name that the volume will be backed up to or is synced.",
+          "type": "string"
+        },
+        "cloneMode": {
+          "enum": [
+            "",
+            "full-copy",
+            "linked-clone"
           ],
           "type": "string"
         },
@@ -68,10 +92,16 @@
           "type": "array"
         },
         "encrypted": {
-          "type": "boolean"
+          "type": "boolean",
+          "x-kubernetes-validations": [
+            {
+              "message": "Encrypted is immutable",
+              "rule": "self == oldSelf"
+            }
+          ]
         },
-        "engineImage": {
-          "description": "Deprecated: Replaced by field `image`.",
+        "engineNodeID": {
+          "description": "engineNodeID defines the node where the backend engine (target) runs.\nIf empty, falls back to NodeID.",
           "type": "string"
         },
         "freezeFilesystemForSnapshot": {
@@ -91,6 +121,7 @@
             "blockdev",
             "iscsi",
             "nvmf",
+            "ublk",
             ""
           ],
           "type": "string"
@@ -108,6 +139,7 @@
           "type": "string"
         },
         "nodeID": {
+          "description": "nodeID defines the node where the volume is attached (where the frontend initiator runs).",
           "type": "string"
         },
         "nodeSelector": {
@@ -117,6 +149,21 @@
           "type": "array"
         },
         "numberOfReplicas": {
+          "type": "integer"
+        },
+        "offlineRebuilding": {
+          "description": "Specifies whether Longhorn should rebuild replicas while the detached volume is degraded.\n- ignored: Use the global setting for offline replica rebuilding.\n- enabled: Enable offline rebuilding for this volume, regardless of the global setting.\n- disabled: Disable offline rebuilding for this volume, regardless of the global setting",
+          "enum": [
+            "ignored",
+            "disabled",
+            "enabled"
+          ],
+          "type": "string"
+        },
+        "rebuildConcurrentSyncLimit": {
+          "description": "RebuildConcurrentSyncLimit controls the maximum number of file synchronization operations that can run\nconcurrently during a single replica rebuild.\nWhen set to 0, it means following the global setting.",
+          "maximum": 5,
+          "minimum": 0,
           "type": "integer"
         },
         "replicaAutoBalance": {
@@ -136,6 +183,12 @@
             "disabled"
           ],
           "type": "string"
+        },
+        "replicaRebuildingBandwidthLimit": {
+          "description": "ReplicaRebuildingBandwidthLimit controls the maximum write bandwidth (in megabytes per second) allowed on the destination replica during the rebuilding process. Set this value to 0 to disable bandwidth limiting.",
+          "format": "int64",
+          "minimum": 0,
+          "type": "integer"
         },
         "replicaSoftAntiAffinity": {
           "description": "Replica soft anti affinity of the volume. Set enabled to allow replicas to be scheduled on the same node.",
@@ -179,6 +232,10 @@
           ],
           "type": "string"
         },
+        "snapshotHashingRequestedAt": {
+          "description": "SnapshotHashingRequestedAt is the RFC3339 timestamp (e.g., \"2026-03-16T10:30:00Z\") when an on-demand snapshot checksum calculation is requested.\nWhen this value is set and is later than LastOnDemandSnapshotHashingCompleteAt, the system will calculate checksums\nfor all user snapshots.\n\nIf SnapshotHashingRequestedAt differs from LastOnDemandSnapshotHashingCompleteAt, it indicates that a hashing request\nis still in progress, and a new request will be rejected.",
+          "type": "string"
+        },
         "snapshotMaxCount": {
           "type": "integer"
         },
@@ -187,6 +244,14 @@
           "type": "string"
         },
         "staleReplicaTimeout": {
+          "type": "integer"
+        },
+        "ublkNumberOfQueue": {
+          "description": "ublkNumberOfQueue controls the number of queues for ublk frontend.",
+          "type": "integer"
+        },
+        "ublkQueueDepth": {
+          "description": "ublkQueueDepth controls the depth of each queue for ublk frontend.",
           "type": "integer"
         },
         "unmapMarkSnapChainRemoved": {
@@ -263,6 +328,10 @@
           "nullable": true,
           "type": "array"
         },
+        "currentEngineNodeID": {
+          "description": "the node that the engine (target) is currently running on.",
+          "type": "string"
+        },
         "currentImage": {
           "type": "string"
         },
@@ -330,6 +399,9 @@
           "type": "object",
           "additionalProperties": false
         },
+        "lastAutoSalvagedAt": {
+          "type": "string"
+        },
         "lastBackup": {
           "type": "string"
         },
@@ -339,11 +411,11 @@
         "lastDegradedAt": {
           "type": "string"
         },
-        "ownerID": {
+        "lastOnDemandSnapshotHashingCompleteAt": {
+          "description": "LastOnDemandSnapshotHashingCompleteAt is the RFC3339 timestamp (e.g., \"2026-03-16T10:30:00Z\") when the\nmost recent on-demand snapshot checksum calculation completed.\nWhen this value matches SnapshotHashingRequestedAt, the requested on-demand checksum calculation is considered complete.",
           "type": "string"
         },
-        "pendingNodeID": {
-          "description": "Deprecated.",
+        "ownerID": {
           "type": "string"
         },
         "remountRequestedAt": {
@@ -365,6 +437,10 @@
           "type": "string"
         },
         "state": {
+          "type": "string"
+        },
+        "switchoverState": {
+          "description": "SwitchoverState describes the current progress of a v2 engine live switchover.\nEmpty when no switchover is in progress.",
           "type": "string"
         }
       },

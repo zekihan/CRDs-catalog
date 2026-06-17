@@ -1,5 +1,5 @@
 {
-  "description": "Setting is where Longhorn stores setting object.",
+  "description": "Addon is used to track application of a manifest file on disk. It mostly exists so that the wrangler DesiredSet\nApply controller has an object to track as the owner, and ensure that all created resources are tracked when the\nmanifest is modified or removed.",
   "properties": {
     "apiVersion": {
       "description": "APIVersion defines the versioned schema of this representation of an object.\nServers should convert recognized schemas to the latest internal value, and\nmay reject unrecognized values.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
@@ -12,27 +12,21 @@
     "metadata": {
       "type": "object"
     },
-    "status": {
-      "description": "The status of the setting.",
+    "spec": {
+      "description": "Spec provides information about the on-disk manifest backing this resource.",
       "properties": {
-        "applied": {
-          "description": "The setting is applied.",
-          "type": "boolean"
+        "checksum": {
+          "description": "Checksum is the SHA256 checksum of the most recently successfully applied manifest file.",
+          "type": "string"
+        },
+        "source": {
+          "description": "Source is the Path on disk to the manifest file that this Addon tracks.",
+          "type": "string"
         }
       },
-      "required": [
-        "applied"
-      ],
       "type": "object",
       "additionalProperties": false
-    },
-    "value": {
-      "description": "The value of the setting.\n- It can be a non-JSON formatted string that is applied to all the applicable data engines listed in the setting definition.\n- It can be a JSON formatted string that contains values for applicable data engines listed in the setting definition's Default.",
-      "type": "string"
     }
   },
-  "required": [
-    "value"
-  ],
   "type": "object"
 }

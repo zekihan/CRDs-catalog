@@ -61,6 +61,10 @@
               "progress": {
                 "type": "integer"
               },
+              "realSize": {
+                "format": "int64",
+                "type": "integer"
+              },
               "senderManagerAddress": {
                 "type": "string"
               },
