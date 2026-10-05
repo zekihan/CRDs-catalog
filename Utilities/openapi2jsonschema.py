@@ -28,8 +28,16 @@ def additional_properties(data, skip=False):
         if "properties" in data and not skip:
             if "additionalProperties" not in data:
                 data["additionalProperties"] = False
-        for _, v in data.items():
-            additional_properties(v)
+        for k, v in data.items():
+            if k in ("properties", "patternProperties", "definitions", "$defs"):
+                if isinstance(v, dict):
+                    for schema in v.values():
+                        additional_properties(schema)
+            else:
+                additional_properties(v)
+    elif isinstance(data, list):
+        for schema in data:
+            additional_properties(schema)
     return data
 
 def test_replace_int_or_string():

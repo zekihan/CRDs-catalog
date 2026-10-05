@@ -2,9 +2,9 @@ name: CRD policy tests
 on:
   push:
     branches: [main]
-    paths: ['.github/scripts/**', '.github/workflows/crd-*.yml']
+    paths: ['.github/scripts/**', '.github/workflows/crd-*.yml', 'Utilities/openapi2jsonschema.py', 'Utilities/refresh-crds-catalog.py', 'Utilities/patches/**', 'Utilities/tests/**']
   pull_request:
-    paths: ['.github/scripts/**', '.github/workflows/crd-*.yml']
+    paths: ['.github/scripts/**', '.github/workflows/crd-*.yml', 'Utilities/openapi2jsonschema.py', 'Utilities/refresh-crds-catalog.py', 'Utilities/patches/**', 'Utilities/tests/**']
 permissions:
   contents: read
 jobs:
@@ -20,3 +20,4 @@ jobs:
           python-version: '3.12'
       - run: python -m pip install --require-hashes --only-binary=":all:" -r .github/scripts/requirements.txt
       - run: python -m unittest discover -s .github/scripts/tests -v
+      - run: python -m unittest discover -s Utilities/tests -v
