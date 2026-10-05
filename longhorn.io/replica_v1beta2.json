@@ -18,10 +18,6 @@
         "active": {
           "type": "boolean"
         },
-        "backendStoreDriver": {
-          "description": "Deprecated:Replaced by field `dataEngine`.",
-          "type": "string"
-        },
         "backingImage": {
           "type": "string"
         },
@@ -42,10 +38,6 @@
           "type": "string"
         },
         "diskPath": {
-          "type": "string"
-        },
-        "engineImage": {
-          "description": "Deprecated: Replaced by field `image`.",
           "type": "string"
         },
         "engineName": {
@@ -76,8 +68,16 @@
           "description": "LastHealthyAt is set every time a replica becomes read/write in an engine. Unlike HealthyAt, LastHealthyAt is\nnever cleared. LastHealthyAt is not a reliable indicator of the state of a replica's data. For example, a\nreplica with LastHealthyAt set may be in the middle of a rebuild. However, because it is never cleared, it can be\ncompared to LastFailedAt to help prevent dangerous replica deletion in some corner cases. LastHealthyAt may be\nlater than the corresponding entry in an engine's replicaTransitionTimeMap because it is set when the volume\ncontroller acknowledges the change.",
           "type": "string"
         },
+        "linkedCloneSrcReplicaName": {
+          "description": "LinkedCloneSrcReplicaName is the name of the src replica this clone replica is parented to.\nImmutable once set. Non-empty only for linked-clone replicas.",
+          "type": "string"
+        },
         "logRequested": {
           "type": "boolean"
+        },
+        "migrationEngineName": {
+          "description": "MigrationEngineName is indicating the migrating engine which current connected to this replica. This is only\nused for live migration of v2 data engine",
+          "type": "string"
         },
         "nodeID": {
           "type": "string"
@@ -155,10 +155,6 @@
         "currentState": {
           "type": "string"
         },
-        "evictionRequested": {
-          "description": "Deprecated: Replaced by field `spec.evictionRequested`.",
-          "type": "boolean"
-        },
         "instanceManagerName": {
           "type": "string"
         },
@@ -180,7 +176,17 @@
         "started": {
           "type": "boolean"
         },
+        "starting": {
+          "type": "boolean"
+        },
         "storageIP": {
+          "type": "string"
+        },
+        "ublkID": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "uuid": {
           "type": "string"
         }
       },

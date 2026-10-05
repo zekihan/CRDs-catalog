@@ -28,7 +28,7 @@
           "type": "object"
         },
         "volume": {
-          "description": "the volume that this snapshot belongs to.\nThis field is immutable after creation.\nRequired",
+          "description": "the volume that this snapshot belongs to.\nThis field is immutable after creation.",
           "type": "string"
         }
       },
@@ -42,6 +42,10 @@
       "description": "SnapshotStatus defines the observed state of Longhorn Snapshot",
       "properties": {
         "checksum": {
+          "type": "string"
+        },
+        "checksumCalculatedAt": {
+          "description": "ChecksumCalculatedAt is the RFC3339 timestamp indicating when the checksum\nfor this snapshot was last calculated or updated.",
           "type": "string"
         },
         "children": {
@@ -75,6 +79,9 @@
         },
         "readyToUse": {
           "type": "boolean"
+        },
+        "requestedTime": {
+          "type": "string"
         },
         "restoreSize": {
           "format": "int64",

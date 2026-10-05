@@ -15,10 +15,19 @@
     "spec": {
       "description": "BackupVolumeSpec defines the desired state of the Longhorn backup volume",
       "properties": {
+        "backupTargetName": {
+          "description": "The backup target name that the backup volume was synced.",
+          "nullable": true,
+          "type": "string"
+        },
         "syncRequestedAt": {
           "description": "The time to request run sync the remote backup volume.",
           "format": "date-time",
           "nullable": true,
+          "type": "string"
+        },
+        "volumeName": {
+          "description": "The volume name that the backup volume was used to backup.",
           "type": "string"
         }
       },
@@ -70,6 +79,14 @@
           "description": "The last time that the backup volume was synced into the cluster.",
           "format": "date-time",
           "nullable": true,
+          "type": "string"
+        },
+        "linkedCloneSourceSnapshot": {
+          "description": "The source snapshot of the backed up volume, set only when it was a linked clone.",
+          "type": "string"
+        },
+        "linkedCloneSourceVolume": {
+          "description": "The source volume of the backed up volume, set only when it was a linked clone.",
           "type": "string"
         },
         "messages": {
