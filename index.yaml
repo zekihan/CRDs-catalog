@@ -1040,6 +1040,10 @@ apisix.apache.org:
     filename: apisix.apache.org/consumer_v1alpha1.json
     kind: Consumer
     name: consumer_v1alpha1
+  - apiVersion: apisix.apache.org/v1alpha1
+    filename: apisix.apache.org/l4routepolicy_v1alpha1.json
+    kind: L4RoutePolicy
+    name: l4routepolicy_v1alpha1
 apm.k8s.elastic.co:
   - apiVersion: apm.k8s.elastic.co/v1
     filename: apm.k8s.elastic.co/apmserver_v1.json
@@ -1595,6 +1599,11 @@ auditlog.cattle.io:
     filename: auditlog.cattle.io/auditpolicy_v1.json
     kind: auditpolicy
     name: auditpolicy_v1
+auth.ais.nvidia.com:
+  - apiVersion: auth.ais.nvidia.com/v1alpha1
+    filename: auth.ais.nvidia.com/aistoreauthprofile_v1alpha1.json
+    kind: AIStoreAuthProfile
+    name: aistoreauthprofile_v1alpha1
 authentication.concierge.pinniped.dev:
   - apiVersion: authentication.concierge.pinniped.dev/v1alpha1
     filename: authentication.concierge.pinniped.dev/jwtauthenticator_v1alpha1.json
@@ -3950,6 +3959,123 @@ controlplane.cluster.x-k8s.io:
     filename: controlplane.cluster.x-k8s.io/k0scontrolplane_v1beta1.json
     kind: K0sControlPlane
     name: k0scontrolplane_v1beta1
+coralogix.com:
+  - apiVersion: coralogix.com/v1alpha1
+    filename: coralogix.com/rulegroup_v1alpha1.json
+    kind: RuleGroup
+    name: rulegroup_v1alpha1
+  - apiVersion: coralogix.com/v1alpha1
+    filename: coralogix.com/enrichment_v1alpha1.json
+    kind: Enrichment
+    name: enrichment_v1alpha1
+  - apiVersion: coralogix.com/v1alpha1
+    filename: coralogix.com/outboundwebhook_v1alpha1.json
+    kind: OutboundWebhook
+    name: outboundwebhook_v1alpha1
+  - apiVersion: coralogix.com/v1alpha1
+    filename: coralogix.com/viewfolder_v1alpha1.json
+    kind: ViewFolder
+    name: viewfolder_v1alpha1
+  - apiVersion: coralogix.com/v1alpha1
+    filename: coralogix.com/aicustomevaluation_v1alpha1.json
+    kind: AICustomEvaluation
+    name: aicustomevaluation_v1alpha1
+  - apiVersion: coralogix.com/v1alpha1
+    filename: coralogix.com/recordingrulegroupset_v1alpha1.json
+    kind: RecordingRuleGroupSet
+    name: recordingrulegroupset_v1alpha1
+  - apiVersion: coralogix.com/v1alpha1
+    filename: coralogix.com/dashboardsfolder_v1alpha1.json
+    kind: DashboardsFolder
+    name: dashboardsfolder_v1alpha1
+  - apiVersion: coralogix.com/v1alpha1
+    filename: coralogix.com/dashboard_v1alpha1.json
+    kind: Dashboard
+    name: dashboard_v1alpha1
+  - apiVersion: coralogix.com/v1alpha1
+    filename: coralogix.com/aievaluation_v1alpha1.json
+    kind: AIEvaluation
+    name: aievaluation_v1alpha1
+  - apiVersion: coralogix.com/v1alpha1
+    filename: coralogix.com/group_v1alpha1.json
+    kind: Group
+    name: group_v1alpha1
+  - apiVersion: coralogix.com/v1alpha1
+    filename: coralogix.com/ipaccess_v1alpha1.json
+    kind: IPAccess
+    name: ipaccess_v1alpha1
+  - apiVersion: coralogix.com/v1alpha1
+    filename: coralogix.com/scope_v1alpha1.json
+    kind: Scope
+    name: scope_v1alpha1
+  - apiVersion: coralogix.com/v1alpha1
+    filename: coralogix.com/integration_v1alpha1.json
+    kind: Integration
+    name: integration_v1alpha1
+  - apiVersion: coralogix.com/v1alpha1
+    filename: coralogix.com/view_v1alpha1.json
+    kind: View
+    name: view_v1alpha1
+  - apiVersion: coralogix.com/v1alpha1
+    filename: coralogix.com/connector_v1alpha1.json
+    kind: Connector
+    name: connector_v1alpha1
+  - apiVersion: coralogix.com/v1alpha1
+    filename: coralogix.com/preset_v1alpha1.json
+    kind: Preset
+    name: preset_v1alpha1
+  - apiVersion: coralogix.com/v1alpha1
+    filename: coralogix.com/apikey_v1alpha1.json
+    kind: ApiKey
+    name: apikey_v1alpha1
+  - apiVersion: coralogix.com/v1alpha1
+    filename: coralogix.com/customenrichment_v1alpha1.json
+    kind: CustomEnrichment
+    name: customenrichment_v1alpha1
+  - apiVersion: coralogix.com/v1alpha1
+    filename: coralogix.com/tcotracespolicies_v1alpha1.json
+    kind: TCOTracesPolicies
+    name: tcotracespolicies_v1alpha1
+  - apiVersion: coralogix.com/v1beta1
+    filename: coralogix.com/alert_v1beta1.json
+    kind: Alert
+    name: alert_v1beta1
+  - apiVersion: coralogix.com/v1alpha1
+    filename: coralogix.com/events2metric_v1alpha1.json
+    kind: events2metric
+    name: events2metric_v1alpha1
+  - apiVersion: coralogix.com/v1alpha1
+    filename: coralogix.com/archivemetricstarget_v1alpha1.json
+    kind: archivemetricstarget
+    name: archivemetricstarget_v1alpha1
+  - apiVersion: coralogix.com/v1alpha1
+    filename: coralogix.com/alertscheduler_v1alpha1.json
+    kind: AlertScheduler
+    name: alertscheduler_v1alpha1
+  - apiVersion: coralogix.com/v1alpha1
+    filename: coralogix.com/globalrouter_v1alpha1.json
+    kind: GlobalRouter
+    name: globalrouter_v1alpha1
+  - apiVersion: coralogix.com/v1alpha1
+    filename: coralogix.com/slo_v1alpha1.json
+    kind: SLO
+    name: slo_v1alpha1
+  - apiVersion: coralogix.com/v1alpha1
+    filename: coralogix.com/archivelogstarget_v1alpha1.json
+    kind: ArchiveLogsTarget
+    name: archivelogstarget_v1alpha1
+  - apiVersion: coralogix.com/v1alpha1
+    filename: coralogix.com/tcologspolicies_v1alpha1.json
+    kind: TCOLogsPolicies
+    name: tcologspolicies_v1alpha1
+  - apiVersion: coralogix.com/v1alpha1
+    filename: coralogix.com/quotaallocationruleset_v1alpha1.json
+    kind: QuotaAllocationRuleSet
+    name: quotaallocationruleset_v1alpha1
+  - apiVersion: coralogix.com/v1alpha1
+    filename: coralogix.com/customrole_v1alpha1.json
+    kind: CustomRole
+    name: customrole_v1alpha1
 core.cnrm.cloud.google.com:
   - apiVersion: core.cnrm.cloud.google.com/v1beta1
     filename: core.cnrm.cloud.google.com/configconnector_v1beta1.json
@@ -4807,6 +4933,11 @@ druid.apache.org:
     filename: druid.apache.org/druidingestion_v1alpha1.json
     kind: druidingestion
     name: druidingestion_v1alpha1
+dsql.services.k8s.aws:
+  - apiVersion: dsql.services.k8s.aws/v1alpha1
+    filename: dsql.services.k8s.aws/cluster_v1alpha1.json
+    kind: Cluster
+    name: cluster_v1alpha1
 dynamodb.services.k8s.aws:
   - apiVersion: dynamodb.services.k8s.aws/v1alpha1
     filename: dynamodb.services.k8s.aws/backup_v1alpha1.json
@@ -5796,6 +5927,80 @@ ec2.services.k8s.aws:
     filename: ec2.services.k8s.aws/vpcendpointserviceconfiguration_v1alpha1.json
     kind: VPCEndpointServiceConfiguration
     name: vpcendpointserviceconfiguration_v1alpha1
+ecr.aws.m.upbound.io:
+  - apiVersion: ecr.aws.m.upbound.io/v1beta1
+    filename: ecr.aws.m.upbound.io/registryscanningconfiguration_v1beta1.json
+    kind: RegistryScanningConfiguration
+    name: registryscanningconfiguration_v1beta1
+  - apiVersion: ecr.aws.m.upbound.io/v1beta1
+    filename: ecr.aws.m.upbound.io/repositorypolicy_v1beta1.json
+    kind: RepositoryPolicy
+    name: repositorypolicy_v1beta1
+  - apiVersion: ecr.aws.m.upbound.io/v1beta1
+    filename: ecr.aws.m.upbound.io/registrypolicy_v1beta1.json
+    kind: RegistryPolicy
+    name: registrypolicy_v1beta1
+  - apiVersion: ecr.aws.m.upbound.io/v1beta1
+    filename: ecr.aws.m.upbound.io/replicationconfiguration_v1beta1.json
+    kind: ReplicationConfiguration
+    name: replicationconfiguration_v1beta1
+  - apiVersion: ecr.aws.m.upbound.io/v1beta1
+    filename: ecr.aws.m.upbound.io/pullthroughcacherule_v1beta1.json
+    kind: PullThroughCacheRule
+    name: pullthroughcacherule_v1beta1
+  - apiVersion: ecr.aws.m.upbound.io/v1beta1
+    filename: ecr.aws.m.upbound.io/repositorycreationtemplate_v1beta1.json
+    kind: RepositoryCreationTemplate
+    name: repositorycreationtemplate_v1beta1
+  - apiVersion: ecr.aws.m.upbound.io/v1beta1
+    filename: ecr.aws.m.upbound.io/repository_v1beta1.json
+    kind: Repository
+    name: repository_v1beta1
+  - apiVersion: ecr.aws.m.upbound.io/v1beta1
+    filename: ecr.aws.m.upbound.io/lifecyclepolicy_v1beta1.json
+    kind: LifecyclePolicy
+    name: lifecyclepolicy_v1beta1
+ecr.aws.upbound.io:
+  - apiVersion: ecr.aws.upbound.io/v1beta1
+    filename: ecr.aws.upbound.io/registryscanningconfiguration_v1beta1.json
+    kind: RegistryScanningConfiguration
+    name: registryscanningconfiguration_v1beta1
+  - apiVersion: ecr.aws.upbound.io/v1beta2
+    filename: ecr.aws.upbound.io/replicationconfiguration_v1beta2.json
+    kind: ReplicationConfiguration
+    name: replicationconfiguration_v1beta2
+  - apiVersion: ecr.aws.upbound.io/v1beta1
+    filename: ecr.aws.upbound.io/repositorypolicy_v1beta1.json
+    kind: RepositoryPolicy
+    name: repositorypolicy_v1beta1
+  - apiVersion: ecr.aws.upbound.io/v1beta2
+    filename: ecr.aws.upbound.io/repository_v1beta2.json
+    kind: Repository
+    name: repository_v1beta2
+  - apiVersion: ecr.aws.upbound.io/v1beta1
+    filename: ecr.aws.upbound.io/registrypolicy_v1beta1.json
+    kind: RegistryPolicy
+    name: registrypolicy_v1beta1
+  - apiVersion: ecr.aws.upbound.io/v1beta1
+    filename: ecr.aws.upbound.io/replicationconfiguration_v1beta1.json
+    kind: ReplicationConfiguration
+    name: replicationconfiguration_v1beta1
+  - apiVersion: ecr.aws.upbound.io/v1beta1
+    filename: ecr.aws.upbound.io/pullthroughcacherule_v1beta1.json
+    kind: PullThroughCacheRule
+    name: pullthroughcacherule_v1beta1
+  - apiVersion: ecr.aws.upbound.io/v1beta1
+    filename: ecr.aws.upbound.io/repositorycreationtemplate_v1beta1.json
+    kind: RepositoryCreationTemplate
+    name: repositorycreationtemplate_v1beta1
+  - apiVersion: ecr.aws.upbound.io/v1beta1
+    filename: ecr.aws.upbound.io/repository_v1beta1.json
+    kind: Repository
+    name: repository_v1beta1
+  - apiVersion: ecr.aws.upbound.io/v1beta1
+    filename: ecr.aws.upbound.io/lifecyclepolicy_v1beta1.json
+    kind: LifecyclePolicy
+    name: lifecyclepolicy_v1beta1
 ecr.services.k8s.aws:
   - apiVersion: ecr.services.k8s.aws/v1alpha1
     filename: ecr.services.k8s.aws/repository_v1alpha1.json
@@ -6889,6 +7094,18 @@ gateway.k8s.aws:
     filename: gateway.k8s.aws/loadbalancerconfiguration_v1beta1.json
     kind: LoadBalancerConfiguration
     name: loadbalancerconfiguration_v1beta1
+  - apiVersion: gateway.k8s.aws/v1
+    filename: gateway.k8s.aws/loadbalancerconfiguration_v1.json
+    kind: LoadBalancerConfiguration
+    name: loadbalancerconfiguration_v1
+  - apiVersion: gateway.k8s.aws/v1
+    filename: gateway.k8s.aws/targetgroupconfiguration_v1.json
+    kind: TargetGroupConfiguration
+    name: targetgroupconfiguration_v1
+  - apiVersion: gateway.k8s.aws/v1
+    filename: gateway.k8s.aws/listenerruleconfiguration_v1.json
+    kind: ListenerRuleConfiguration
+    name: listenerruleconfiguration_v1
 gateway.kgateway.dev:
   - apiVersion: gateway.kgateway.dev/v1alpha1
     filename: gateway.kgateway.dev/directresponse_v1alpha1.json
@@ -7003,6 +7220,14 @@ gateway.networking.k8s.io:
     filename: gateway.networking.k8s.io/tlsroute_v1.json
     kind: TLSRoute
     name: tlsroute_v1
+  - apiVersion: gateway.networking.k8s.io/v1
+    filename: gateway.networking.k8s.io/udproute_v1.json
+    kind: UDPRoute
+    name: udproute_v1
+  - apiVersion: gateway.networking.k8s.io/v1
+    filename: gateway.networking.k8s.io/tcproute_v1.json
+    kind: TCPRoute
+    name: tcproute_v1
 gateway.networking.x-k8s.io:
   - apiVersion: gateway.networking.x-k8s.io/v1alpha1
     filename: gateway.networking.x-k8s.io/xlistenerset_v1alpha1.json
@@ -7016,6 +7241,10 @@ gateway.networking.x-k8s.io:
     filename: gateway.networking.x-k8s.io/xmesh_v1alpha1.json
     kind: XMesh
     name: xmesh_v1alpha1
+  - apiVersion: gateway.networking.x-k8s.io/v1alpha1
+    filename: gateway.networking.x-k8s.io/xbackend_v1alpha1.json
+    kind: XBackend
+    name: xbackend_v1alpha1
 gateway.nginx.org:
   - apiVersion: gateway.nginx.org/v1alpha1
     filename: gateway.nginx.org/observabilitypolicy_v1alpha1.json
@@ -7045,6 +7274,26 @@ gateway.nginx.org:
     filename: gateway.nginx.org/snippetsfilter_v1alpha1.json
     kind: SnippetsFilter
     name: snippetsfilter_v1alpha1
+  - apiVersion: gateway.nginx.org/v1alpha1
+    filename: gateway.nginx.org/proxysettingspolicy_v1alpha1.json
+    kind: ProxySettingsPolicy
+    name: proxysettingspolicy_v1alpha1
+  - apiVersion: gateway.nginx.org/v1alpha1
+    filename: gateway.nginx.org/wafpolicy_v1alpha1.json
+    kind: WAFPolicy
+    name: wafpolicy_v1alpha1
+  - apiVersion: gateway.nginx.org/v1alpha1
+    filename: gateway.nginx.org/snippetspolicy_v1alpha1.json
+    kind: SnippetsPolicy
+    name: snippetspolicy_v1alpha1
+  - apiVersion: gateway.nginx.org/v1alpha1
+    filename: gateway.nginx.org/authenticationfilter_v1alpha1.json
+    kind: AuthenticationFilter
+    name: authenticationfilter_v1alpha1
+  - apiVersion: gateway.nginx.org/v1alpha1
+    filename: gateway.nginx.org/ratelimitpolicy_v1alpha1.json
+    kind: RateLimitPolicy
+    name: ratelimitpolicy_v1alpha1
 gateway.solo.io:
   - apiVersion: gateway.solo.io/v1
     filename: gateway.solo.io/virtualservice_v1.json
@@ -7139,6 +7388,14 @@ generators.external-secrets.io:
     filename: generators.external-secrets.io/sshkey_v1alpha1.json
     kind: SSHKey
     name: sshkey_v1alpha1
+  - apiVersion: generators.external-secrets.io/v1alpha1
+    filename: generators.external-secrets.io/beyondtrustworkloadcredentialsdynamicsecret_v1alpha1.json
+    kind: BeyondtrustWorkloadCredentialsDynamicSecret
+    name: beyondtrustworkloadcredentialsdynamicsecret_v1alpha1
+  - apiVersion: generators.external-secrets.io/v1alpha1
+    filename: generators.external-secrets.io/gitlabdeploytoken_v1alpha1.json
+    kind: GitlabDeployToken
+    name: gitlabdeploytoken_v1alpha1
 getambassador.io:
   - apiVersion: getambassador.io/v2
     filename: getambassador.io/host_v2.json
@@ -7517,6 +7774,42 @@ groupsnapshot.storage.k8s.io:
     filename: groupsnapshot.storage.k8s.io/volumegroupsnapshotcontent_v1beta1.json
     kind: VolumeGroupSnapshotContent
     name: volumegroupsnapshotcontent_v1beta1
+  - apiVersion: groupsnapshot.storage.k8s.io/v1
+    filename: groupsnapshot.storage.k8s.io/volumegroupsnapshotclass_v1.json
+    kind: VolumeGroupSnapshotClass
+    name: volumegroupsnapshotclass_v1
+  - apiVersion: groupsnapshot.storage.k8s.io/v1beta2
+    filename: groupsnapshot.storage.k8s.io/volumegroupsnapshotcontent_v1beta2.json
+    kind: VolumeGroupSnapshotContent
+    name: volumegroupsnapshotcontent_v1beta2
+  - apiVersion: groupsnapshot.storage.k8s.io/v1alpha1
+    filename: groupsnapshot.storage.k8s.io/volumegroupsnapshot_v1alpha1.json
+    kind: VolumeGroupSnapshot
+    name: volumegroupsnapshot_v1alpha1
+  - apiVersion: groupsnapshot.storage.k8s.io/v1beta2
+    filename: groupsnapshot.storage.k8s.io/volumegroupsnapshot_v1beta2.json
+    kind: VolumeGroupSnapshot
+    name: volumegroupsnapshot_v1beta2
+  - apiVersion: groupsnapshot.storage.k8s.io/v1beta2
+    filename: groupsnapshot.storage.k8s.io/volumegroupsnapshotclass_v1beta2.json
+    kind: VolumeGroupSnapshotClass
+    name: volumegroupsnapshotclass_v1beta2
+  - apiVersion: groupsnapshot.storage.k8s.io/v1alpha1
+    filename: groupsnapshot.storage.k8s.io/volumegroupsnapshotcontent_v1alpha1.json
+    kind: VolumeGroupSnapshotContent
+    name: volumegroupsnapshotcontent_v1alpha1
+  - apiVersion: groupsnapshot.storage.k8s.io/v1alpha1
+    filename: groupsnapshot.storage.k8s.io/volumegroupsnapshotclass_v1alpha1.json
+    kind: VolumeGroupSnapshotClass
+    name: volumegroupsnapshotclass_v1alpha1
+  - apiVersion: groupsnapshot.storage.k8s.io/v1
+    filename: groupsnapshot.storage.k8s.io/volumegroupsnapshot_v1.json
+    kind: VolumeGroupSnapshot
+    name: volumegroupsnapshot_v1
+  - apiVersion: groupsnapshot.storage.k8s.io/v1
+    filename: groupsnapshot.storage.k8s.io/volumegroupsnapshotcontent_v1.json
+    kind: VolumeGroupSnapshotContent
+    name: volumegroupsnapshotcontent_v1
 healthcare.cnrm.cloud.google.com:
   - apiVersion: healthcare.cnrm.cloud.google.com/v1alpha1
     filename: healthcare.cnrm.cloud.google.com/healthcaredataset_v1alpha1.json
@@ -7592,6 +7885,67 @@ http.keda.sh:
     filename: http.keda.sh/httpscaledobject_v1alpha1.json
     kind: HTTPScaledObject
     name: httpscaledobject_v1alpha1
+hub.traefik.io:
+  - apiVersion: hub.traefik.io/v1alpha1
+    filename: hub.traefik.io/contentitem_v1alpha1.json
+    kind: ContentItem
+    name: contentitem_v1alpha1
+  - apiVersion: hub.traefik.io/v1alpha1
+    filename: hub.traefik.io/apiplan_v1alpha1.json
+    kind: APIPlan
+    name: apiplan_v1alpha1
+  - apiVersion: hub.traefik.io/v1alpha1
+    filename: hub.traefik.io/uplink_v1alpha1.json
+    kind: Uplink
+    name: uplink_v1alpha1
+  - apiVersion: hub.traefik.io/v1alpha1
+    filename: hub.traefik.io/api_v1alpha1.json
+    kind: API
+    name: api_v1alpha1
+  - apiVersion: hub.traefik.io/v1alpha1
+    filename: hub.traefik.io/managedapplication_v1alpha1.json
+    kind: ManagedApplication
+    name: managedapplication_v1alpha1
+  - apiVersion: hub.traefik.io/v1alpha1
+    filename: hub.traefik.io/apiportal_v1alpha1.json
+    kind: APIPortal
+    name: apiportal_v1alpha1
+  - apiVersion: hub.traefik.io/v1alpha1
+    filename: hub.traefik.io/apiportalauth_v1alpha1.json
+    kind: APIPortalAuth
+    name: apiportalauth_v1alpha1
+  - apiVersion: hub.traefik.io/v1alpha1
+    filename: hub.traefik.io/accesscontrolpolicy_v1alpha1.json
+    kind: AccessControlPolicy
+    name: accesscontrolpolicy_v1alpha1
+  - apiVersion: hub.traefik.io/v1alpha1
+    filename: hub.traefik.io/apiversion_v1alpha1.json
+    kind: APIVersion
+    name: apiversion_v1alpha1
+  - apiVersion: hub.traefik.io/v1alpha1
+    filename: hub.traefik.io/managedsubscription_v1alpha1.json
+    kind: ManagedSubscription
+    name: managedsubscription_v1alpha1
+  - apiVersion: hub.traefik.io/v1alpha1
+    filename: hub.traefik.io/apibundle_v1alpha1.json
+    kind: APIBundle
+    name: apibundle_v1alpha1
+  - apiVersion: hub.traefik.io/v1alpha1
+    filename: hub.traefik.io/apicatalogitem_v1alpha1.json
+    kind: APICatalogItem
+    name: apicatalogitem_v1alpha1
+  - apiVersion: hub.traefik.io/v1alpha1
+    filename: hub.traefik.io/apiauth_v1alpha1.json
+    kind: APIAuth
+    name: apiauth_v1alpha1
+  - apiVersion: hub.traefik.io/v1alpha1
+    filename: hub.traefik.io/aiservice_v1alpha1.json
+    kind: AIService
+    name: aiservice_v1alpha1
+  - apiVersion: hub.traefik.io/v1alpha1
+    filename: hub.traefik.io/apiratelimit_v1alpha1.json
+    kind: APIRateLimit
+    name: apiratelimit_v1alpha1
 iam.aws.m.upbound.io:
   - apiVersion: iam.aws.m.upbound.io/v1beta1
     filename: iam.aws.m.upbound.io/accesskey_v1beta1.json
@@ -8798,6 +9152,38 @@ infrastructure.cluster.x-k8s.io:
     filename: infrastructure.cluster.x-k8s.io/openstackmachinetemplate_v1beta2.json
     kind: OpenStackMachineTemplate
     name: openstackmachinetemplate_v1beta2
+  - apiVersion: infrastructure.cluster.x-k8s.io/v1alpha1
+    filename: infrastructure.cluster.x-k8s.io/proxmoxmachinetemplate_v1alpha1.json
+    kind: ProxmoxMachineTemplate
+    name: proxmoxmachinetemplate_v1alpha1
+  - apiVersion: infrastructure.cluster.x-k8s.io/v1alpha1
+    filename: infrastructure.cluster.x-k8s.io/proxmoxclustertemplate_v1alpha1.json
+    kind: ProxmoxClusterTemplate
+    name: proxmoxclustertemplate_v1alpha1
+  - apiVersion: infrastructure.cluster.x-k8s.io/v1alpha1
+    filename: infrastructure.cluster.x-k8s.io/proxmoxcluster_v1alpha1.json
+    kind: ProxmoxCluster
+    name: proxmoxcluster_v1alpha1
+  - apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
+    filename: infrastructure.cluster.x-k8s.io/proxmoxcluster_v1alpha2.json
+    kind: ProxmoxCluster
+    name: proxmoxcluster_v1alpha2
+  - apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
+    filename: infrastructure.cluster.x-k8s.io/proxmoxmachine_v1alpha2.json
+    kind: ProxmoxMachine
+    name: proxmoxmachine_v1alpha2
+  - apiVersion: infrastructure.cluster.x-k8s.io/v1alpha1
+    filename: infrastructure.cluster.x-k8s.io/proxmoxmachine_v1alpha1.json
+    kind: ProxmoxMachine
+    name: proxmoxmachine_v1alpha1
+  - apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
+    filename: infrastructure.cluster.x-k8s.io/proxmoxmachinetemplate_v1alpha2.json
+    kind: ProxmoxMachineTemplate
+    name: proxmoxmachinetemplate_v1alpha2
+  - apiVersion: infrastructure.cluster.x-k8s.io/v1alpha2
+    filename: infrastructure.cluster.x-k8s.io/proxmoxclustertemplate_v1alpha2.json
+    kind: ProxmoxClusterTemplate
+    name: proxmoxclustertemplate_v1alpha2
 ingress.oraclecloud.com:
   - apiVersion: ingress.oraclecloud.com/v1beta1
     filename: ingress.oraclecloud.com/ingressclassparameters_v1beta1.json
@@ -8857,6 +9243,11 @@ insights.azure.com:
     filename: insights.azure.com/scheduledqueryrule_v1api20220615.json
     kind: scheduledQueryRule
     name: scheduledqueryrule_v1api20220615
+installation.mattermost.com:
+  - apiVersion: installation.mattermost.com/v1beta1
+    filename: installation.mattermost.com/mattermost_v1beta1.json
+    kind: Mattermost
+    name: mattermost_v1beta1
 instancetype.kubevirt.io:
   - apiVersion: instancetype.kubevirt.io/v1beta1
     filename: instancetype.kubevirt.io/virtualmachineinstancetype_v1beta1.json
@@ -8947,6 +9338,14 @@ ipam.cluster.x-k8s.io:
     filename: ipam.cluster.x-k8s.io/globalinclusterippool_v1alpha2.json
     kind: GlobalInClusterIPPool
     name: globalinclusterippool_v1alpha2
+  - apiVersion: ipam.cluster.x-k8s.io/v1alpha2
+    filename: ipam.cluster.x-k8s.io/inclusterprefixpool_v1alpha2.json
+    kind: InClusterPrefixPool
+    name: inclusterprefixpool_v1alpha2
+  - apiVersion: ipam.cluster.x-k8s.io/v1alpha2
+    filename: ipam.cluster.x-k8s.io/globalinclusterprefixpool_v1alpha2.json
+    kind: GlobalInClusterPrefixPool
+    name: globalinclusterprefixpool_v1alpha2
 isindir.github.com:
   - apiVersion: isindir.github.com/v1alpha3
     filename: isindir.github.com/sopssecret_v1alpha3.json
@@ -9012,6 +9411,15 @@ k0smotron.io:
     filename: k0smotron.io/cluster_v1beta1.json
     kind: Cluster
     name: cluster_v1beta1
+k3s.cattle.io:
+  - apiVersion: k3s.cattle.io/v1
+    filename: k3s.cattle.io/etcdsnapshotfile_v1.json
+    kind: etcdsnapshotfile
+    name: etcdsnapshotfile_v1
+  - apiVersion: k3s.cattle.io/v1
+    filename: k3s.cattle.io/addon_v1.json
+    kind: Addon
+    name: addon_v1
 k6.grafana.crossplane.io:
   - apiVersion: k6.grafana.crossplane.io/v1alpha1
     filename: k6.grafana.crossplane.io/loadtest_v1alpha1.json
@@ -9175,6 +9583,10 @@ k8s.mariadb.com:
     filename: k8s.mariadb.com/externalmariadb_v1alpha1.json
     kind: ExternalMariaDB
     name: externalmariadb_v1alpha1
+  - apiVersion: k8s.mariadb.com/v1alpha1
+    filename: k8s.mariadb.com/pointintimerecovery_v1alpha1.json
+    kind: PointInTimeRecovery
+    name: pointintimerecovery_v1alpha1
 k8s.nginx.org:
   - apiVersion: k8s.nginx.org/v1alpha1
     filename: k8s.nginx.org/globalconfiguration_v1alpha1.json
@@ -9464,6 +9876,11 @@ keda.sh:
     filename: keda.sh/cloudeventsource_v1alpha1.json
     kind: CloudEventSource
     name: cloudeventsource_v1alpha1
+keycloak.crossplane.io:
+  - apiVersion: keycloak.crossplane.io/v1beta1
+    filename: keycloak.crossplane.io/providerconfig_v1beta1.json
+    kind: ProviderConfig
+    name: providerconfig_v1beta1
 keyvault.azure.com:
   - apiVersion: keyvault.azure.com/v1api20230701
     filename: keyvault.azure.com/vault_v1api20230701.json
@@ -9609,6 +10026,11 @@ kubeflow.org:
     filename: kubeflow.org/mpijob_v2beta1.json
     kind: mpijob
     name: mpijob_v2beta1
+kubernetes.crossplane.io:
+  - apiVersion: kubernetes.crossplane.io/v1alpha1
+    filename: kubernetes.crossplane.io/providerconfig_v1alpha1.json
+    kind: ProviderConfig
+    name: providerconfig_v1alpha1
 kubernetesconfiguration.azure.com:
   - apiVersion: kubernetesconfiguration.azure.com/v1api20241101
     filename: kubernetesconfiguration.azure.com/extension_v1api20241101.json
@@ -9741,6 +10163,71 @@ kueue.x-k8s.io:
     filename: kueue.x-k8s.io/workloadpriorityclass_v1beta1.json
     kind: WorkloadPriorityClass
     name: workloadpriorityclass_v1beta1
+  - apiVersion: kueue.x-k8s.io/v1beta2
+    filename: kueue.x-k8s.io/admissioncheck_v1beta2.json
+    kind: AdmissionCheck
+    name: admissioncheck_v1beta2
+  - apiVersion: kueue.x-k8s.io/v1beta1
+    filename: kueue.x-k8s.io/topology_v1beta1.json
+    kind: Topology
+    name: topology_v1beta1
+  - apiVersion: kueue.x-k8s.io/v1beta2
+    filename: kueue.x-k8s.io/topology_v1beta2.json
+    kind: Topology
+    name: topology_v1beta2
+  - apiVersion: kueue.x-k8s.io/v1beta2
+    filename: kueue.x-k8s.io/workloadpriorityclass_v1beta2.json
+    kind: WorkloadPriorityClass
+    name: workloadpriorityclass_v1beta2
+  - apiVersion: kueue.x-k8s.io/v1beta2
+    filename: kueue.x-k8s.io/multikueuecluster_v1beta2.json
+    kind: MultiKueueCluster
+    name: multikueuecluster_v1beta2
+  - apiVersion: kueue.x-k8s.io/v1beta2
+    filename: kueue.x-k8s.io/provisioningrequestconfig_v1beta2.json
+    kind: ProvisioningRequestConfig
+    name: provisioningrequestconfig_v1beta2
+  - apiVersion: kueue.x-k8s.io/v1beta1
+    filename: kueue.x-k8s.io/cohort_v1beta1.json
+    kind: Cohort
+    name: cohort_v1beta1
+  - apiVersion: kueue.x-k8s.io/v1beta2
+    filename: kueue.x-k8s.io/cohort_v1beta2.json
+    kind: Cohort
+    name: cohort_v1beta2
+  - apiVersion: kueue.x-k8s.io/v1beta2
+    filename: kueue.x-k8s.io/multikueueconfig_v1beta2.json
+    kind: MultiKueueConfig
+    name: multikueueconfig_v1beta2
+  - apiVersion: kueue.x-k8s.io/v1beta2
+    filename: kueue.x-k8s.io/clusterqueue_v1beta2.json
+    kind: ClusterQueue
+    name: clusterqueue_v1beta2
+  - apiVersion: kueue.x-k8s.io/v1beta2
+    filename: kueue.x-k8s.io/workload_v1beta2.json
+    kind: Workload
+    name: workload_v1beta2
+  - apiVersion: kueue.x-k8s.io/v1beta2
+    filename: kueue.x-k8s.io/resourceflavor_v1beta2.json
+    kind: ResourceFlavor
+    name: resourceflavor_v1beta2
+  - apiVersion: kueue.x-k8s.io/v1beta2
+    filename: kueue.x-k8s.io/localqueue_v1beta2.json
+    kind: LocalQueue
+    name: localqueue_v1beta2
+kusto.azure.com:
+  - apiVersion: kusto.azure.com/v1api20230815
+    filename: kusto.azure.com/dataconnection_v1api20230815.json
+    kind: dataConnection
+    name: dataconnection_v1api20230815
+  - apiVersion: kusto.azure.com/v1api20230815
+    filename: kusto.azure.com/database_v1api20230815.json
+    kind: database
+    name: database_v1api20230815
+  - apiVersion: kusto.azure.com/v1api20230815
+    filename: kusto.azure.com/cluster_v1api20230815.json
+    kind: cluster
+    name: cluster_v1api20230815
 kustomize.config.k8s.io:
   - apiVersion: kustomize.config.k8s.io/v1alpha1
     filename: kustomize.config.k8s.io/component_v1alpha1.json
@@ -9806,19 +10293,6 @@ kustomize.config.k8s.io:
     filename: kueue.x-k8s.io/cohort_v1beta1.json
     kind: Cohort
     name: cohort_v1beta1
-kusto.azure.com:
-  - apiVersion: kusto.azure.com/v1api20230815
-    filename: kusto.azure.com/dataconnection_v1api20230815.json
-    kind: dataConnection
-    name: dataconnection_v1api20230815
-  - apiVersion: kusto.azure.com/v1api20230815
-    filename: kusto.azure.com/database_v1api20230815.json
-    kind: database
-    name: database_v1api20230815
-  - apiVersion: kusto.azure.com/v1api20230815
-    filename: kusto.azure.com/cluster_v1api20230815.json
-    kind: cluster
-    name: cluster_v1api20230815
 kustomize.toolkit.fluxcd.io:
   - apiVersion: kustomize.toolkit.fluxcd.io/v1beta1
     filename: kustomize.toolkit.fluxcd.io/kustomization_v1beta1.json
@@ -10346,6 +10820,34 @@ longhorn.io:
     filename: longhorn.io/node_v1beta1.json
     kind: Node
     name: node_v1beta1
+  - apiVersion: longhorn.io/v1beta2
+    filename: longhorn.io/shard_v1beta2.json
+    kind: Shard
+    name: shard_v1beta2
+  - apiVersion: longhorn.io/v1beta2
+    filename: longhorn.io/instancemanagerupgradecontrol_v1beta2.json
+    kind: InstanceManagerUpgradeControl
+    name: instancemanagerupgradecontrol_v1beta2
+  - apiVersion: longhorn.io/v1beta2
+    filename: longhorn.io/snapshotgroup_v1beta2.json
+    kind: SnapshotGroup
+    name: snapshotgroup_v1beta2
+  - apiVersion: longhorn.io/v1beta2
+    filename: longhorn.io/backup_v1beta2.json
+    kind: Backup
+    name: backup_v1beta2
+  - apiVersion: longhorn.io/v1beta2
+    filename: longhorn.io/instancemanagerupgrade_v1beta2.json
+    kind: InstanceManagerUpgrade
+    name: instancemanagerupgrade_v1beta2
+  - apiVersion: longhorn.io/v1beta2
+    filename: longhorn.io/enginefrontend_v1beta2.json
+    kind: EngineFrontend
+    name: enginefrontend_v1beta2
+  - apiVersion: longhorn.io/v1beta2
+    filename: longhorn.io/shardgroup_v1beta2.json
+    kind: ShardGroup
+    name: shardgroup_v1beta2
 machinelearningservices.azure.com:
   - apiVersion: machinelearningservices.azure.com/v1api20210701
     filename: machinelearningservices.azure.com/workspace_v1api20210701.json
@@ -10455,6 +10957,15 @@ maps.k8s.elastic.co:
     filename: maps.k8s.elastic.co/elasticmapsserver_v1alpha1.json
     kind: ElasticMapsServer
     name: elasticmapsserver_v1alpha1
+mattermost.com:
+  - apiVersion: mattermost.com/v1alpha1
+    filename: mattermost.com/mattermostrestoredb_v1alpha1.json
+    kind: MattermostRestoreDB
+    name: mattermostrestoredb_v1alpha1
+  - apiVersion: mattermost.com/v1alpha1
+    filename: mattermost.com/clusterinstallation_v1alpha1.json
+    kind: ClusterInstallation
+    name: clusterinstallation_v1alpha1
 memcache.cnrm.cloud.google.com:
   - apiVersion: memcache.cnrm.cloud.google.com/v1beta1
     filename: memcache.cnrm.cloud.google.com/memcacheinstance_v1beta1.json
@@ -10485,6 +10996,15 @@ memorydb.services.k8s.aws:
     filename: memorydb.services.k8s.aws/user_v1alpha1.json
     kind: User
     name: user_v1alpha1
+memorystore.cnrm.cloud.google.com:
+  - apiVersion: memorystore.cnrm.cloud.google.com/v1beta1
+    filename: memorystore.cnrm.cloud.google.com/memorystoreinstance_v1beta1.json
+    kind: MemorystoreInstance
+    name: memorystoreinstance_v1beta1
+  - apiVersion: memorystore.cnrm.cloud.google.com/v1alpha1
+    filename: memorystore.cnrm.cloud.google.com/memorystoreinstance_v1alpha1.json
+    kind: MemorystoreInstance
+    name: memorystoreinstance_v1alpha1
 messaging.knative.dev:
   - apiVersion: messaging.knative.dev/v1
     filename: messaging.knative.dev/subscription_v1.json
@@ -10793,6 +11313,52 @@ mq.services.k8s.aws:
     filename: mq.services.k8s.aws/broker_v1alpha1.json
     kind: Broker
     name: broker_v1alpha1
+mssql.sql.crossplane.io:
+  - apiVersion: mssql.sql.crossplane.io/v1alpha1
+    filename: mssql.sql.crossplane.io/providerconfig_v1alpha1.json
+    kind: ProviderConfig
+    name: providerconfig_v1alpha1
+  - apiVersion: mssql.sql.crossplane.io/v1alpha1
+    filename: mssql.sql.crossplane.io/database_v1alpha1.json
+    kind: Database
+    name: database_v1alpha1
+  - apiVersion: mssql.sql.crossplane.io/v1alpha1
+    filename: mssql.sql.crossplane.io/user_v1alpha1.json
+    kind: User
+    name: user_v1alpha1
+  - apiVersion: mssql.sql.crossplane.io/v1alpha1
+    filename: mssql.sql.crossplane.io/providerconfigusage_v1alpha1.json
+    kind: ProviderConfigUsage
+    name: providerconfigusage_v1alpha1
+  - apiVersion: mssql.sql.crossplane.io/v1alpha1
+    filename: mssql.sql.crossplane.io/grant_v1alpha1.json
+    kind: Grant
+    name: grant_v1alpha1
+mssql.sql.m.crossplane.io:
+  - apiVersion: mssql.sql.m.crossplane.io/v1alpha1
+    filename: mssql.sql.m.crossplane.io/providerconfig_v1alpha1.json
+    kind: ProviderConfig
+    name: providerconfig_v1alpha1
+  - apiVersion: mssql.sql.m.crossplane.io/v1alpha1
+    filename: mssql.sql.m.crossplane.io/database_v1alpha1.json
+    kind: Database
+    name: database_v1alpha1
+  - apiVersion: mssql.sql.m.crossplane.io/v1alpha1
+    filename: mssql.sql.m.crossplane.io/user_v1alpha1.json
+    kind: User
+    name: user_v1alpha1
+  - apiVersion: mssql.sql.m.crossplane.io/v1alpha1
+    filename: mssql.sql.m.crossplane.io/providerconfigusage_v1alpha1.json
+    kind: ProviderConfigUsage
+    name: providerconfigusage_v1alpha1
+  - apiVersion: mssql.sql.m.crossplane.io/v1alpha1
+    filename: mssql.sql.m.crossplane.io/grant_v1alpha1.json
+    kind: Grant
+    name: grant_v1alpha1
+  - apiVersion: mssql.sql.m.crossplane.io/v1alpha1
+    filename: mssql.sql.m.crossplane.io/clusterproviderconfig_v1alpha1.json
+    kind: ClusterProviderConfig
+    name: clusterproviderconfig_v1alpha1
 mutations.gatekeeper.sh:
   - apiVersion: mutations.gatekeeper.sh/v1
     filename: mutations.gatekeeper.sh/assignmetadata_v1.json
@@ -10864,6 +11430,52 @@ mysql.presslabs.org:
     filename: mysql.presslabs.org/mysqlbackup_v2.json
     kind: mysqlbackup
     name: mysqlbackup_v2
+mysql.sql.crossplane.io:
+  - apiVersion: mysql.sql.crossplane.io/v1alpha1
+    filename: mysql.sql.crossplane.io/providerconfig_v1alpha1.json
+    kind: ProviderConfig
+    name: providerconfig_v1alpha1
+  - apiVersion: mysql.sql.crossplane.io/v1alpha1
+    filename: mysql.sql.crossplane.io/database_v1alpha1.json
+    kind: Database
+    name: database_v1alpha1
+  - apiVersion: mysql.sql.crossplane.io/v1alpha1
+    filename: mysql.sql.crossplane.io/user_v1alpha1.json
+    kind: User
+    name: user_v1alpha1
+  - apiVersion: mysql.sql.crossplane.io/v1alpha1
+    filename: mysql.sql.crossplane.io/providerconfigusage_v1alpha1.json
+    kind: ProviderConfigUsage
+    name: providerconfigusage_v1alpha1
+  - apiVersion: mysql.sql.crossplane.io/v1alpha1
+    filename: mysql.sql.crossplane.io/grant_v1alpha1.json
+    kind: Grant
+    name: grant_v1alpha1
+mysql.sql.m.crossplane.io:
+  - apiVersion: mysql.sql.m.crossplane.io/v1alpha1
+    filename: mysql.sql.m.crossplane.io/providerconfig_v1alpha1.json
+    kind: ProviderConfig
+    name: providerconfig_v1alpha1
+  - apiVersion: mysql.sql.m.crossplane.io/v1alpha1
+    filename: mysql.sql.m.crossplane.io/database_v1alpha1.json
+    kind: Database
+    name: database_v1alpha1
+  - apiVersion: mysql.sql.m.crossplane.io/v1alpha1
+    filename: mysql.sql.m.crossplane.io/user_v1alpha1.json
+    kind: User
+    name: user_v1alpha1
+  - apiVersion: mysql.sql.m.crossplane.io/v1alpha1
+    filename: mysql.sql.m.crossplane.io/providerconfigusage_v1alpha1.json
+    kind: ProviderConfigUsage
+    name: providerconfigusage_v1alpha1
+  - apiVersion: mysql.sql.m.crossplane.io/v1alpha1
+    filename: mysql.sql.m.crossplane.io/grant_v1alpha1.json
+    kind: Grant
+    name: grant_v1alpha1
+  - apiVersion: mysql.sql.m.crossplane.io/v1alpha1
+    filename: mysql.sql.m.crossplane.io/clusterproviderconfig_v1alpha1.json
+    kind: ClusterProviderConfig
+    name: clusterproviderconfig_v1alpha1
 nauth.io:
   - apiVersion: nauth.io/v1alpha1
     filename: nauth.io/natscluster_v1alpha1.json
@@ -11616,6 +12228,11 @@ objectbucket.io:
     filename: objectbucket.io/objectbucket_v1alpha1.json
     kind: objectbucket
     name: objectbucket_v1alpha1
+observability.giantswarm.io:
+  - apiVersion: observability.giantswarm.io/v1alpha2
+    filename: observability.giantswarm.io/silence_v1alpha2.json
+    kind: Silence
+    name: silence_v1alpha2
 oncall.grafana.crossplane.io:
   - apiVersion: oncall.grafana.crossplane.io/v1alpha1
     filename: oncall.grafana.crossplane.io/outgoingwebhook_v1alpha1.json
@@ -11780,6 +12397,10 @@ opentelemetry.io:
     filename: opentelemetry.io/targetallocator_v1alpha1.json
     kind: targetallocator
     name: targetallocator_v1alpha1
+  - apiVersion: opentelemetry.io/v1alpha1
+    filename: opentelemetry.io/clusterobservability_v1alpha1.json
+    kind: clusterobservability
+    name: clusterobservability_v1alpha1
 operationalinsights.azure.com:
   - apiVersion: operationalinsights.azure.com/v1api20210601
     filename: operationalinsights.azure.com/workspace_v1api20210601.json
@@ -12027,6 +12648,14 @@ orgpolicy.cnrm.cloud.google.com:
     filename: orgpolicy.cnrm.cloud.google.com/orgpolicycustomconstraint_v1beta1.json
     kind: OrgPolicyCustomConstraint
     name: orgpolicycustomconstraint_v1beta1
+  - apiVersion: orgpolicy.cnrm.cloud.google.com/v1alpha1
+    filename: orgpolicy.cnrm.cloud.google.com/orgpolicypolicy_v1alpha1.json
+    kind: OrgPolicyPolicy
+    name: orgpolicypolicy_v1alpha1
+  - apiVersion: orgpolicy.cnrm.cloud.google.com/v1beta1
+    filename: orgpolicy.cnrm.cloud.google.com/orgpolicypolicy_v1beta1.json
+    kind: OrgPolicyPolicy
+    name: orgpolicypolicy_v1beta1
 osconfig.cnrm.cloud.google.com:
   - apiVersion: osconfig.cnrm.cloud.google.com/v1alpha1
     filename: osconfig.cnrm.cloud.google.com/osconfigpatchdeployment_v1alpha1.json
@@ -12580,10 +13209,6 @@ platform.confluent.io:
     kind: schemaimporter
     name: schemaimporter_v1beta1
   - apiVersion: platform.confluent.io/v1beta1
-    filename: platform.confluent.io/referencegrant_v1beta1.json
-    kind: ReferenceGrant
-    name: referencegrant_v1beta1
-  - apiVersion: platform.confluent.io/v1beta1
     filename: platform.confluent.io/gateway_v1beta1.json
     kind: gateway
     name: gateway_v1beta1
@@ -12591,6 +13216,46 @@ platform.confluent.io:
     filename: platform.confluent.io/flinkapplication_v1beta1.json
     kind: flinkapplication
     name: flinkapplication_v1beta1
+  - apiVersion: platform.confluent.io/v1beta1
+    filename: platform.confluent.io/flinkstatement_v1beta1.json
+    kind: flinkstatement
+    name: flinkstatement_v1beta1
+  - apiVersion: platform.confluent.io/v1beta1
+    filename: platform.confluent.io/flinkcomputepool_v1beta1.json
+    kind: flinkcomputepool
+    name: flinkcomputepool_v1beta1
+  - apiVersion: platform.confluent.io/v1beta1
+    filename: platform.confluent.io/flinksecret_v1beta1.json
+    kind: flinksecret
+    name: flinksecret_v1beta1
+  - apiVersion: platform.confluent.io/v1beta1
+    filename: platform.confluent.io/flinkenvironmentsecretmapping_v1beta1.json
+    kind: flinkenvironmentsecretmapping
+    name: flinkenvironmentsecretmapping_v1beta1
+  - apiVersion: platform.confluent.io/v1beta1
+    filename: platform.confluent.io/flinkbluegreendeployment_v1beta1.json
+    kind: flinkbluegreendeployment
+    name: flinkbluegreendeployment_v1beta1
+  - apiVersion: platform.confluent.io/v1beta1
+    filename: platform.confluent.io/flinkstatesnapshot_v1beta1.json
+    kind: flinkstatesnapshot
+    name: flinkstatesnapshot_v1beta1
+  - apiVersion: platform.confluent.io/v1beta1
+    filename: platform.confluent.io/flinkkafkacatalog_v1beta1.json
+    kind: flinkkafkacatalog
+    name: flinkkafkacatalog_v1beta1
+  - apiVersion: platform.confluent.io/v1beta1
+    filename: platform.confluent.io/flinkdeployment_v1beta1.json
+    kind: flinkdeployment
+    name: flinkdeployment_v1beta1
+  - apiVersion: platform.confluent.io/v1beta1
+    filename: platform.confluent.io/flinksessionjob_v1beta1.json
+    kind: flinksessionjob
+    name: flinksessionjob_v1beta1
+  - apiVersion: platform.confluent.io/v1beta1
+    filename: platform.confluent.io/flinkkafkadatabase_v1beta1.json
+    kind: flinkkafkadatabase
+    name: flinkkafkadatabase_v1beta1
 policies.kyverno.io:
   - apiVersion: policies.kyverno.io/v1alpha1
     filename: policies.kyverno.io/generatingpolicy_v1alpha1.json
@@ -12866,6 +13531,80 @@ postgresql.cnpg.io:
     filename: postgresql.cnpg.io/failoverquorum_v1.json
     kind: FailoverQuorum
     name: failoverquorum_v1
+  - apiVersion: postgresql.cnpg.io/v1
+    filename: postgresql.cnpg.io/databaserole_v1.json
+    kind: DatabaseRole
+    name: databaserole_v1
+postgresql.sql.crossplane.io:
+  - apiVersion: postgresql.sql.crossplane.io/v1alpha1
+    filename: postgresql.sql.crossplane.io/defaultprivileges_v1alpha1.json
+    kind: DefaultPrivileges
+    name: defaultprivileges_v1alpha1
+  - apiVersion: postgresql.sql.crossplane.io/v1alpha1
+    filename: postgresql.sql.crossplane.io/providerconfig_v1alpha1.json
+    kind: ProviderConfig
+    name: providerconfig_v1alpha1
+  - apiVersion: postgresql.sql.crossplane.io/v1alpha1
+    filename: postgresql.sql.crossplane.io/role_v1alpha1.json
+    kind: Role
+    name: role_v1alpha1
+  - apiVersion: postgresql.sql.crossplane.io/v1alpha1
+    filename: postgresql.sql.crossplane.io/database_v1alpha1.json
+    kind: Database
+    name: database_v1alpha1
+  - apiVersion: postgresql.sql.crossplane.io/v1alpha1
+    filename: postgresql.sql.crossplane.io/schema_v1alpha1.json
+    kind: Schema
+    name: schema_v1alpha1
+  - apiVersion: postgresql.sql.crossplane.io/v1alpha1
+    filename: postgresql.sql.crossplane.io/providerconfigusage_v1alpha1.json
+    kind: ProviderConfigUsage
+    name: providerconfigusage_v1alpha1
+  - apiVersion: postgresql.sql.crossplane.io/v1alpha1
+    filename: postgresql.sql.crossplane.io/grant_v1alpha1.json
+    kind: Grant
+    name: grant_v1alpha1
+  - apiVersion: postgresql.sql.crossplane.io/v1alpha1
+    filename: postgresql.sql.crossplane.io/extension_v1alpha1.json
+    kind: Extension
+    name: extension_v1alpha1
+postgresql.sql.m.crossplane.io:
+  - apiVersion: postgresql.sql.m.crossplane.io/v1alpha1
+    filename: postgresql.sql.m.crossplane.io/defaultprivileges_v1alpha1.json
+    kind: DefaultPrivileges
+    name: defaultprivileges_v1alpha1
+  - apiVersion: postgresql.sql.m.crossplane.io/v1alpha1
+    filename: postgresql.sql.m.crossplane.io/providerconfig_v1alpha1.json
+    kind: ProviderConfig
+    name: providerconfig_v1alpha1
+  - apiVersion: postgresql.sql.m.crossplane.io/v1alpha1
+    filename: postgresql.sql.m.crossplane.io/role_v1alpha1.json
+    kind: Role
+    name: role_v1alpha1
+  - apiVersion: postgresql.sql.m.crossplane.io/v1alpha1
+    filename: postgresql.sql.m.crossplane.io/database_v1alpha1.json
+    kind: Database
+    name: database_v1alpha1
+  - apiVersion: postgresql.sql.m.crossplane.io/v1alpha1
+    filename: postgresql.sql.m.crossplane.io/schema_v1alpha1.json
+    kind: Schema
+    name: schema_v1alpha1
+  - apiVersion: postgresql.sql.m.crossplane.io/v1alpha1
+    filename: postgresql.sql.m.crossplane.io/providerconfigusage_v1alpha1.json
+    kind: ProviderConfigUsage
+    name: providerconfigusage_v1alpha1
+  - apiVersion: postgresql.sql.m.crossplane.io/v1alpha1
+    filename: postgresql.sql.m.crossplane.io/grant_v1alpha1.json
+    kind: Grant
+    name: grant_v1alpha1
+  - apiVersion: postgresql.sql.m.crossplane.io/v1alpha1
+    filename: postgresql.sql.m.crossplane.io/extension_v1alpha1.json
+    kind: Extension
+    name: extension_v1alpha1
+  - apiVersion: postgresql.sql.m.crossplane.io/v1alpha1
+    filename: postgresql.sql.m.crossplane.io/clusterproviderconfig_v1alpha1.json
+    kind: ClusterProviderConfig
+    name: clusterproviderconfig_v1alpha1
 privateca.cnrm.cloud.google.com:
   - apiVersion: privateca.cnrm.cloud.google.com/v1beta1
     filename: privateca.cnrm.cloud.google.com/privatecacertificate_v1beta1.json
@@ -14241,6 +14980,54 @@ seaweed.seaweedfs.com:
     filename: seaweed.seaweedfs.com/seaweed_v1.json
     kind: seaweed
     name: seaweed_v1
+  - apiVersion: seaweed.seaweedfs.com/v1
+    filename: seaweed.seaweedfs.com/bucketlifecyclepolicy_v1.json
+    kind: bucketlifecyclepolicy
+    name: bucketlifecyclepolicy_v1
+  - apiVersion: seaweed.seaweedfs.com/v1
+    filename: seaweed.seaweedfs.com/s3policybinding_v1.json
+    kind: s3policybinding
+    name: s3policybinding_v1
+  - apiVersion: seaweed.seaweedfs.com/v1
+    filename: seaweed.seaweedfs.com/s3policy_v1.json
+    kind: s3policy
+    name: s3policy_v1
+  - apiVersion: seaweed.seaweedfs.com/v1
+    filename: seaweed.seaweedfs.com/adminscript_v1.json
+    kind: adminscript
+    name: adminscript_v1
+  - apiVersion: seaweed.seaweedfs.com/v1
+    filename: seaweed.seaweedfs.com/s3identity_v1.json
+    kind: s3identity
+    name: s3identity_v1
+  - apiVersion: seaweed.seaweedfs.com/v1
+    filename: seaweed.seaweedfs.com/s3credentials_v1.json
+    kind: s3credentials
+    name: s3credentials_v1
+  - apiVersion: seaweed.seaweedfs.com/v1
+    filename: seaweed.seaweedfs.com/bucket_v1.json
+    kind: bucket
+    name: bucket_v1
+  - apiVersion: seaweed.seaweedfs.com/v1
+    filename: seaweed.seaweedfs.com/seaweedbackup_v1.json
+    kind: seaweedbackup
+    name: seaweedbackup_v1
+  - apiVersion: seaweed.seaweedfs.com/v1
+    filename: seaweed.seaweedfs.com/s3oidcprovider_v1.json
+    kind: s3oidcprovider
+    name: s3oidcprovider_v1
+  - apiVersion: seaweed.seaweedfs.com/v1
+    filename: seaweed.seaweedfs.com/seaweedrestore_v1.json
+    kind: seaweedrestore
+    name: seaweedrestore_v1
+  - apiVersion: seaweed.seaweedfs.com/v1
+    filename: seaweed.seaweedfs.com/seaweedcsidriver_v1.json
+    kind: seaweedcsidriver
+    name: seaweedcsidriver_v1
+  - apiVersion: seaweed.seaweedfs.com/v1
+    filename: seaweed.seaweedfs.com/resourcereferencegrant_v1.json
+    kind: resourcereferencegrant
+    name: resourcereferencegrant_v1
 secret-sync.gke.io:
   - apiVersion: secret-sync.gke.io/v1
     filename: secret-sync.gke.io/secretsync_v1.json
@@ -14349,6 +15136,18 @@ secrets.infisical.com:
     filename: secrets.infisical.com/infisicalpushsecret_v1alpha1.json
     kind: InfisicalPushSecret
     name: infisicalpushsecret_v1alpha1
+  - apiVersion: secrets.infisical.com/v1beta1
+    filename: secrets.infisical.com/infisicalstaticsecret_v1beta1.json
+    kind: InfisicalStaticSecret
+    name: infisicalstaticsecret_v1beta1
+  - apiVersion: secrets.infisical.com/v1beta1
+    filename: secrets.infisical.com/infisicalconnection_v1beta1.json
+    kind: InfisicalConnection
+    name: infisicalconnection_v1beta1
+  - apiVersion: secrets.infisical.com/v1beta1
+    filename: secrets.infisical.com/infisicalauth_v1beta1.json
+    kind: InfisicalAuth
+    name: infisicalauth_v1beta1
 secretsmanager.services.k8s.aws:
   - apiVersion: secretsmanager.services.k8s.aws/v1alpha1
     filename: secretsmanager.services.k8s.aws/secret_v1alpha1.json
@@ -15376,6 +16175,10 @@ tags.cnrm.cloud.google.com:
     filename: tags.cnrm.cloud.google.com/tagstagkey_v1beta1.json
     kind: tagstagkey
     name: tagstagkey_v1beta1
+  - apiVersion: tags.cnrm.cloud.google.com/v1beta1
+    filename: tags.cnrm.cloud.google.com/tagslocationtagbinding_v1beta1.json
+    kind: TagsLocationTagBinding
+    name: tagslocationtagbinding_v1beta1
 tailscale.com:
   - apiVersion: tailscale.com/v1alpha1
     filename: tailscale.com/proxyclass_v1alpha1.json
@@ -15405,6 +16208,10 @@ tailscale.com:
     filename: tailscale.com/tailnet_v1alpha1.json
     kind: tailnet
     name: tailnet_v1alpha1
+  - apiVersion: tailscale.com/v1alpha1
+    filename: tailscale.com/peerrelay_v1alpha1.json
+    kind: peerrelay
+    name: peerrelay_v1alpha1
 talos.dev:
   - apiVersion: talos.dev/v1alpha1
     filename: talos.dev/serviceaccount_v1alpha1.json
@@ -15856,6 +16663,15 @@ v1.edp.epam.com:
     filename: v1.edp.epam.com/keycloakrealmgroup_v1.json
     kind: KeycloakRealmGroup
     name: keycloakrealmgroup_v1
+valkey.io:
+  - apiVersion: valkey.io/v1alpha1
+    filename: valkey.io/valkeynode_v1alpha1.json
+    kind: ValkeyNode
+    name: valkeynode_v1alpha1
+  - apiVersion: valkey.io/v1alpha1
+    filename: valkey.io/valkeycluster_v1alpha1.json
+    kind: ValkeyCluster
+    name: valkeycluster_v1alpha1
 vault.banzaicloud.com:
   - apiVersion: vault.banzaicloud.com/v1alpha1
     filename: vault.banzaicloud.com/vault_v1alpha1.json
