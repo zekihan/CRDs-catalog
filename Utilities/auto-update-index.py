@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 
 import sys
+import json
+import tempfile
+from pathlib import Path
+
 import yaml
 import os
 from typing import List
@@ -22,7 +26,7 @@ class Crd:
 
 class YamlDataStructure:
     def __init__(self):
-        self.data: Dict[str, List[Crd]] = {} 
+        self.data: Dict[str, List[Crd]] = {}
 
     def add_entry(self, entry: Crd):
         if entry.group not in self.data:
@@ -41,8 +45,28 @@ class YamlDataStructure:
                     "filename": crd.filename
                 })
 
-        with open(file_path, "w") as file:
-            yaml.dump(raw_data, file, Dumper=ListDumper)
+        # Serialize and validate before touching the previous index. The temporary
+        # file must share its directory so os.replace is atomic.
+        serialized = yaml.dump(raw_data, Dumper=ListDumper)
+        if yaml.safe_load(serialized) != raw_data:
+            raise ValueError("Index serialization failed validation")
+        destination = Path(file_path)
+        temporary = None
+        try:
+            with tempfile.NamedTemporaryFile(
+                mode="w", encoding="utf-8", dir=destination.parent,
+                prefix=f".{destination.name}.", suffix=".tmp", delete=False,
+            ) as file:
+                temporary = Path(file.name)
+                file.write(serialized)
+                file.flush()
+                os.fsync(file.fileno())
+            mode = destination.stat().st_mode & 0o777 if destination.exists() else 0o644
+            temporary.chmod(mode)
+            os.replace(temporary, destination)
+        finally:
+            if temporary is not None:
+                temporary.unlink(missing_ok=True)
 
     def load_index_file(self, file: str):
         yaml_data: Union[Dict[str, List[Dict[str, str]]], None]
@@ -83,29 +107,42 @@ class SubResult_CrdCollection:
         self.nSkipped = nSkipped
         self.nUpdated = len(list)
 
-def strip_dot_slash(str: str) -> str:
-    return str.lstrip("./")
-
 def list_dirs_in_src_dir(src: str) -> List[str]:
-    entries = [strip_dot_slash(os.path.join(src, name)) for name in os.listdir(src)]
-    return [dir for dir in entries if os.path.isdir(dir)]
+    # Utilities and hidden directories contain tooling rather than schema groups.
+    return [str(path) for path in sorted(Path(src).iterdir())
+            if path.is_dir() and path.name != "Utilities" and not path.name.startswith(".")]
+
 
 def CreateCrds(dir: str, org_data: YamlDataStructure) -> SubResult_CrdCollection:
     print(f"Processing directory {dir}")
     groupName = os.path.basename(dir)
-    listing = [os.path.join(dir, file) for file in os.listdir(dir)]
-    org_data_group = org_data.data.get(groupName, [])
-    skip = [any(crd.filename == file for crd in org_data_group) for file in listing]
-    nSkipped = len([1 for s in skip if s])
-    listing = [file for file, skip in zip(listing, skip) if not skip]
-    crds = [CreateCrdEntry(groupName, file) for file in listing if os.path.isfile(file) and file.endswith(".json")]
-    crds = [crd for crd in crds if crd != None]
+    indexed = {crd.filename for crd in org_data.data.get(groupName, [])}
+    crds = []
+    nSkipped = 0
+    for path in sorted(Path(dir).iterdir()):
+        if path.suffix != ".json":
+            continue
+        # Validate even existing entries: an invalid indexed schema must not be
+        # hidden by the incremental skip optimization.
+        entry = CreateCrdEntry(groupName, str(path))
+        if entry.filename in indexed:
+            nSkipped += 1
+        else:
+            crds.append(entry)
     return SubResult_CrdCollection(crds, nSkipped)
 
+
 def GetFileDescription(file: str) -> str:
-    with open(file, "r") as f:
-        data = yaml.safe_load(f)
-        return data.get("description", "")
+    with open(file, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    if not isinstance(data, dict):
+        raise ValueError(f"{file}: schema must be an object")
+    # Indexing only consumes the description. Nested schema dialects and
+    # Kubernetes extensions are intentionally left to the schema tooling.
+    description = data.get("description", "")
+    if not isinstance(description, str):
+        raise ValueError(f"{file}: description must be a string")
+    return description
 
 def SearchForKindInDescription(lowercaseKind: str, description: str) -> str:
     lowercase_description = description.lower()
@@ -118,12 +155,11 @@ def CreateCrdEntry(group: str, filepath: str):
     file_basename = os.path.basename(filepath)
 
     # file ends with .json. Strip this away
-    filename = file_basename.split(".")[0]
+    filename = Path(file_basename).stem
 
     parts = filename.split('_')
-    if len(parts) != 2:
-      print(f"Error: Unexpected file name format: {filename}", file=sys.stderr)
-      return None
+    if len(parts) != 2 or not all(parts):
+      raise ValueError(f"{filepath}: unexpected file name format: {filename}")
     name, version = parts
 
     description = GetFileDescription(filepath)
@@ -134,16 +170,16 @@ def CreateCrdEntry(group: str, filepath: str):
       name=f"{name}_{version}",
       kind=kind,
       api_version=f"{group}/{version}",
-      filename=filepath
+      filename=f"{group}/{file_basename}"
     )
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser(description="Generate an index.yaml file from CRDs in a source directory.")
     parser.add_argument("source_directory", type=str, help="Path to the source directory containing CRDs.")
     parser.add_argument("index_file", type=str, help="Path to index.yaml to edit.")
     args = parser.parse_args()
 
-    source = args.source_directory
+    source = str(Path(args.source_directory).resolve(strict=True))
     index_file = args.index_file
 
     data = YamlDataStructure()
@@ -154,6 +190,7 @@ if __name__ == "__main__":
     directories = list_dirs_in_src_dir(source)
     crd_entries: List[Crd] = []
     nSkipped = 0
+    errors = []
     with ProcessPoolExecutor() as executor:
         future_dir_crds = {executor.submit(CreateCrds, dir, data): dir for dir in directories}
         for future in future_dir_crds:
@@ -163,7 +200,10 @@ if __name__ == "__main__":
                 if partial_result.nUpdated > 0:
                     crd_entries.extend(partial_result.list)
             except Exception as e:
-                print(f"Error processing file {future_dir_crds[future]}: {e}", file=sys.stderr)
+                errors.append(f"Error processing directory {future_dir_crds[future]}: {e}")
+
+    if errors:
+        raise ValueError("\n".join(errors))
 
     for crd in crd_entries:
         data.add_entry(crd)
@@ -172,3 +212,11 @@ if __name__ == "__main__":
     print(f"Skipped {nSkipped} files.")
     print(f"Added {len(crd_entries)} files.")
     print(f"Removed {nRemoved} files.")
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception as error:
+        print(f"Index update failed: {error}", file=sys.stderr)
+        sys.exit(1)
