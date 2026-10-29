@@ -3,6 +3,7 @@
 # Copied from https://github.com/yannh/kubeconform/blob/master/scripts/openapi2jsonschema.py commit hash 6ae8c45
 # Direct link: https://raw.githubusercontent.com/yannh/kubeconform/6ae8c45bc156ceeb1d421e9b217cfc0c7ba5828d/scripts/openapi2jsonschema.py
 
+import copy
 import yaml
 import json
 import sys
@@ -12,15 +13,26 @@ if 'DISABLE_SSL_CERT_VALIDATION' in os.environ:
     import ssl
     ssl._create_default_https_context = ssl._create_unverified_context
 
-def test_additional_properties():
-    for test in iter([{
-        "input": {"something": {"properties": {}}},
-        "expect": {'something': {'properties': {}, "additionalProperties": False}}
-    },{
-        "input": {"something": {"somethingelse": {}}},
-        "expect": {'something': {'somethingelse': {}}}
-    }]):
-        assert additional_properties(test["input"]) == test["expect"]
+def schema_children(data):
+    """Yield subschemas, excluding instance data such as defaults and enums."""
+    for keyword, value in data.items():
+        if keyword in ("properties", "patternProperties", "definitions", "$defs",
+                       "dependencies", "dependentSchemas"):
+            if isinstance(value, dict):
+                for schema in value.values():
+                    if isinstance(schema, dict):
+                        yield schema
+        elif keyword in ("items", "additionalItems", "additionalProperties", "not",
+                         "allOf", "anyOf", "oneOf", "contains", "propertyNames",
+                         "if", "then", "else", "prefixItems",
+                         "unevaluatedItems", "unevaluatedProperties"):
+            if isinstance(value, dict):
+                yield value
+            elif isinstance(value, list):
+                for schema in value:
+                    if isinstance(schema, dict):
+                        yield schema
+
 
 def additional_properties(data, skip=False):
     "This recreates the behaviour of kubectl at https://github.com/kubernetes/kubernetes/blob/225b9119d6a8f03fcbe3cc3d590c261965d928d0/pkg/kubectl/validation/schema.go#L312"
@@ -28,48 +40,25 @@ def additional_properties(data, skip=False):
         if "properties" in data and not skip:
             if "additionalProperties" not in data:
                 data["additionalProperties"] = False
-        for k, v in data.items():
-            if k in ("properties", "patternProperties", "definitions", "$defs"):
-                if isinstance(v, dict):
-                    for schema in v.values():
-                        additional_properties(schema)
-            else:
-                additional_properties(v)
-    elif isinstance(data, list):
-        for schema in data:
+        for schema in schema_children(data):
             additional_properties(schema)
     return data
 
-def test_replace_int_or_string():
-    for test in iter([{
-        "input": {"something": {"format": "int-or-string"}},
-        "expect": {'something': {'oneOf': [{'type': 'string'}, {'type': 'integer'}]}}
-    },{
-        "input": {"something": {"format": "string"}},
-        "expect": {"something": {"format": "string"}},
-    }]):
-        assert replace_int_or_string(test["input"]) == test["expect"]
 
 def replace_int_or_string(data):
-    new = {}
-    try:
-        for k, v in iter(data.items()):
-            new_v = v
-            if isinstance(v, dict):
-                if "format" in v and v["format"] == "int-or-string":
-                    new_v = {"oneOf": [{"type": "string"}, {"type": "integer"}]}
-                else:
-                    new_v = replace_int_or_string(v)
-            elif isinstance(v, list):
-                new_v = list()
-                for x in v:
-                    new_v.append(replace_int_or_string(x))
-            else:
-                new_v = v
-            new[k] = new_v
-        return new
-    except AttributeError:
-        return data
+    data = copy.deepcopy(data)
+
+    def replace(schema):
+        if schema.get("format") == "int-or-string":
+            del schema["format"]
+            schema["type"] = ["string", "integer"]
+        for child in schema_children(schema):
+            replace(child)
+
+    if isinstance(data, dict):
+        replace(data)
+    return data
+
 
 def allow_null_optional_fields(data, parent=None, grand_parent=None, key=None):
     new = {}
