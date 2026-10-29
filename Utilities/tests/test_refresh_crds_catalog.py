@@ -81,8 +81,11 @@ class RefreshTests(unittest.TestCase):
             rebuilt = root / "rebuilt"
             refresh.run("git", "clone", "--branch", "main", str(bundle), str(rebuilt))
             self.assertEqual(refresh.snapshot_tooling(rebuilt), refresh.snapshot_tooling(ROOT))
-            self.assertIn("UPSTREAM_CHANGE = True",
-                          (rebuilt / "Utilities/openapi2jsonschema.py").read_text())
+            self.assertEqual(
+                (rebuilt / "Utilities/openapi2jsonschema.py").read_text(),
+                (ROOT / "Utilities/openapi2jsonschema.py").read_text()
+                + '\nUPSTREAM_CHANGE = True\n',
+            )
             for kind in ("secretstore", "clustersecretstore"):
                 generated = json.loads((rebuilt / "external-secrets.io" / f"{kind}_v1.json").read_text())
                 jsonschema.Draft4Validator.check_schema(generated)

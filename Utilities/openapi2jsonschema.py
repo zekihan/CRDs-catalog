@@ -125,6 +125,7 @@ if __name__ == "__main__":
       print('Missing FILE parameter.\nUsage: %s [FILE]' % sys.argv[0])
       exit(1)
 
+  planned_schemas = []
   for crdFile in sys.argv[1:]:
       if crdFile.startswith("http"):
         f = urllib.request.urlopen(crdFile)
@@ -159,7 +160,7 @@ if __name__ == "__main__":
                           ).lower() + ".json"
 
                           schema = version["schema"]["openAPIV3Schema"]
-                          write_schema_file(schema, filename)
+                          planned_schemas.append((schema, filename, crdFile))
                       elif "validation" in y["spec"] and "openAPIV3Schema" in y["spec"]["validation"]:
                           filename = filename_format.format(
                               kind=y["spec"]["names"]["kind"],
@@ -169,7 +170,7 @@ if __name__ == "__main__":
                           ).lower() + ".json"
 
                           schema = y["spec"]["validation"]["openAPIV3Schema"]
-                          write_schema_file(schema, filename)
+                          planned_schemas.append((schema, filename, crdFile))
               elif "spec" in y and "validation" in y["spec"] and "openAPIV3Schema" in y["spec"]["validation"]:
                   filename = filename_format.format(
                       kind=y["spec"]["names"]["kind"],
@@ -179,6 +180,21 @@ if __name__ == "__main__":
                   ).lower() + ".json"
 
                   schema = y["spec"]["validation"]["openAPIV3Schema"]
-                  write_schema_file(schema, filename)
+                  planned_schemas.append((schema, filename, crdFile))
+
+  # Discover every output before publishing any schema. Different groups can
+  # share kind/version names, and custom formats are flattened to basenames.
+  sources_by_filename = {}
+  for schema, filename, source in planned_schemas:
+      output = os.path.basename(filename)
+      if output in sources_by_filename:
+          sys.exit(f"Duplicate output filename {output!r}: "
+                   f"{sources_by_filename[output]} and {source}; "
+                   "use a distinct FILENAME_FORMAT such as "
+                   "{fullgroup}_{kind}_{version} or separate the inputs")
+      sources_by_filename[output] = source
+
+  for schema, filename, source in planned_schemas:
+      write_schema_file(schema, filename)
 
   exit(0)

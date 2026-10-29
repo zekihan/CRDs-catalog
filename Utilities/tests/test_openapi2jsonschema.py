@@ -166,5 +166,70 @@ class SchemaTransformationTests(unittest.TestCase):
         jsonschema.Draft4Validator(converted).validate({"format": 80, "name": "web"})
 
 
+class OutputDiscoveryTests(unittest.TestCase):
+    def crd(self, group, kind="Widget", versions=("v1",)):
+        return {"kind": "CustomResourceDefinition", "spec": {
+            "group": group, "names": {"kind": kind},
+            "versions": [{"name": version, "schema": {"openAPIV3Schema": {
+                "type": "object", "description": group,
+            }}} for version in versions],
+        }}
+
+    def run_converter(self, root, documents, filename_format=None):
+        sources = []
+        for i, document in enumerate(documents):
+            source = root / f"input-{i}.json"
+            source.write_text(json.dumps(document))
+            sources.append(str(source))
+        env = os.environ.copy()
+        env.pop("FILENAME_FORMAT", None)
+        if filename_format is not None:
+            env["FILENAME_FORMAT"] = filename_format
+        return subprocess.run(
+            [sys.executable, str(Path(converter.__file__).resolve()), *sources],
+            cwd=root, env=env, capture_output=True, text=True, timeout=30,
+        )
+
+    def test_colliding_outputs_fail_before_publishing(self):
+        first = self.crd("first.io")
+        second = self.crd("second.io")
+        cases = [
+            ([first, second], None),
+            ([{"kind": "List", "items": [first, second]}], None),
+            ([self.crd("first.io", versions=("v1", "v1"))], None),
+            # The collision check must use the basename actually written.
+            ([first, second], "{fullgroup}/{kind}_{version}"),
+        ]
+        for documents, filename_format in cases:
+            with self.subTest(documents=documents, filename_format=filename_format), \
+                    tempfile.TemporaryDirectory(prefix="converter-collision-") as directory:
+                root = Path(directory)
+                output = root / "widget_v1.json"
+                previous = b'{"description": "previous schema"}\n'
+                output.write_bytes(previous)
+                # Even an earlier, distinct output must not publish on failure.
+                result = self.run_converter(
+                    root, [self.crd("unique.io", kind="Other"), *documents], filename_format)
+                self.assertNotEqual(result.returncode, 0, result.stdout)
+                self.assertIn("Duplicate output filename", result.stderr)
+                self.assertIn("widget_v1.json", result.stderr)
+                self.assertEqual(output.read_bytes(), previous)
+                self.assertFalse((root / "other_v1.json").exists())
+
+    def test_fullgroup_format_keeps_distinct_schemas(self):
+        with tempfile.TemporaryDirectory(prefix="converter-distinct-") as directory:
+            root = Path(directory)
+            result = self.run_converter(
+                root, [self.crd(group, versions=("v1", "v2"))
+                       for group in ("first.io", "second.io")],
+                "{fullgroup}_{kind}_{version}",
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            for group in ("first.io", "second.io"):
+                for version in ("v1", "v2"):
+                    output = json.loads((root / f"{group}_widget_{version}.json").read_text())
+                    self.assertEqual(output["description"], group)
+
+
 if __name__ == "__main__":
     unittest.main()
