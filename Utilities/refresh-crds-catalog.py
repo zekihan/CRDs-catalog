@@ -23,6 +23,8 @@ FORK = "git@github.com:zekihan/CRDs-catalog.git"
 UPSTREAM = "https://github.com/datreeio/CRDs-catalog.git"
 PRESERVED_FILES = (
     "Utilities/refresh-crds-catalog.py",
+    "Utilities/auto-update-index.py",
+    "Utilities/tests/test_auto_update_index.py",
     "Utilities/patches/schema-properties.patch",
     "Utilities/tests/test_openapi2jsonschema.py",
     "Utilities/tests/test_refresh_crds_catalog.py",
