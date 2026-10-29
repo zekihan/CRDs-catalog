@@ -127,6 +127,61 @@ class PolicyTests(unittest.TestCase):
             self.expect_error('needs-contributor-input', p.validate_schema, raw)
         p.validate_schema(b'{"type":"object","definitions":{"x":{"type":"string"}},"properties":{"a":{"$ref":"#/definitions/x"}}}')
 
+    def test_schema_reference_names_in_instance_data_are_allowed(self):
+        literal = {'$ref': 'https://example.test/value', 'id': 'widget',
+                   '$id': 'literal', '$dynamicRef': 'another value'}
+        for keyword, value in (('default', literal), ('const', literal),
+                               ('enum', [literal]), ('examples', [literal])):
+            with self.subTest(keyword=keyword):
+                api = FakeAPI()
+                schema = {'type': 'object', keyword: value}
+                api.raw = json.dumps(schema).encode()
+                self.assertEqual(p.validate_schema(api.raw), schema)
+                self.assertEqual(p.evaluate(api, 1, NOW)['decision'], 'eligible')
+        for keyword in ('properties', 'patternProperties', 'definitions', '$defs'):
+            with self.subTest(keyword=keyword):
+                schema = {'type': 'object', keyword: {
+                    name: {'type': 'string'} for name in literal}}
+                self.assertEqual(p.validate_schema(json.dumps(schema)), schema)
+
+    def test_literal_values_remain_bounded_and_supported_across_dialects(self):
+        for dialect in ('http://json-schema.org/draft-04/schema#',
+                        'http://json-schema.org/draft-06/schema#',
+                        'http://json-schema.org/draft-07/schema#',
+                        'https://json-schema.org/draft/2019-09/schema',
+                        'https://json-schema.org/draft/2020-12/schema'):
+            schema = {'$schema': dialect, 'type': 'object',
+                      'properties': {'$ref': {'type': 'string'}},
+                      'default': {'id': 'widget'}}
+            with self.subTest(dialect=dialect):
+                self.assertEqual(p.validate_schema(json.dumps(schema)), schema)
+        deep = {}
+        for _ in range(102):
+            deep = {'value': deep}
+        self.expect_error('manual-review', p.validate_schema,
+                          json.dumps({'type': 'object', 'default': deep}))
+
+    def test_nested_schema_references_still_require_local_targets(self):
+        wrappers = [
+            lambda child, key=key: {key: {'field': child}}
+            for key in ('properties', 'patternProperties', 'definitions', '$defs',
+                        'dependencies', 'dependentSchemas')
+        ] + [
+            lambda child, key=key: {key: child}
+            for key in ('items', 'additionalItems', 'additionalProperties', 'not',
+                        'contains', 'propertyNames', 'if', 'then', 'else',
+                        'unevaluatedItems', 'unevaluatedProperties')
+        ] + [
+            lambda child, key=key: {key: [child]}
+            for key in ('items', 'allOf', 'anyOf', 'oneOf', 'prefixItems')
+        ]
+        for wrap in wrappers:
+            for key in ('$ref', '$dynamicRef', '$recursiveRef', '$id', 'id'):
+                schema = {'type': 'object', **wrap({key: 'https://example.test/schema'})}
+                with self.subTest(schema=schema):
+                    self.expect_error('needs-contributor-input', p.validate_schema,
+                                      json.dumps(schema))
+
     def test_invalid_schema_dialect_types_return_contributor_feedback(self):
         for dialect in ({}, [], 7, True):
             with self.subTest(dialect=dialect):
