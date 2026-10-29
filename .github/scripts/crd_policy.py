@@ -130,6 +130,33 @@ def walk(value):
             stack.extend((v, depth + 1) for v in item)
 
 
+def schema_nodes(schema):
+    """Visit schema objects, skipping property maps and literal instance data.
+
+    Use the schema positions from the supported Draft 4 through 2020-12
+    dialects. The caller bounds the entire document with walk() first.
+    """
+    stack = [schema]
+    while stack:
+        item = stack.pop()
+        if not isinstance(item, dict):
+            continue
+        yield item
+        for keyword, value in item.items():
+            if keyword in ("properties", "patternProperties", "definitions", "$defs",
+                           "dependencies", "dependentSchemas"):
+                if isinstance(value, dict):
+                    stack.extend(value.values())
+            elif keyword in ("items", "additionalItems", "additionalProperties", "not",
+                             "allOf", "anyOf", "oneOf", "contains", "propertyNames",
+                             "if", "then", "else", "prefixItems",
+                             "unevaluatedItems", "unevaluatedProperties"):
+                if isinstance(value, (dict, bool)):
+                    stack.append(value)
+                elif isinstance(value, list):
+                    stack.extend(value)
+
+
 def validate_schema(raw):
     from jsonschema import Draft4Validator, Draft6Validator, Draft7Validator, Draft201909Validator, Draft202012Validator
     from jsonschema.exceptions import SchemaError
@@ -137,7 +164,9 @@ def validate_schema(raw):
         schema = json.loads(raw, object_pairs_hook=unique_object, parse_constant=lambda _: (_ for _ in ()).throw(ValueError("Non-finite number")))
         if not isinstance(schema, dict) or schema.get("type") != "object":
             raise ValueError("Schema root must have type object")
-        for item in walk(schema):
+        for _ in walk(schema):
+            pass
+        for item in schema_nodes(schema):
             if isinstance(item, dict):
                 for key in ("$ref", "$dynamicRef", "$recursiveRef"):
                     if key in item and (not isinstance(item[key], str) or not item[key].startswith("#")):
