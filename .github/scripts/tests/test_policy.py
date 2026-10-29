@@ -127,6 +127,13 @@ class PolicyTests(unittest.TestCase):
             self.expect_error('needs-contributor-input', p.validate_schema, raw)
         p.validate_schema(b'{"type":"object","definitions":{"x":{"type":"string"}},"properties":{"a":{"$ref":"#/definitions/x"}}}')
 
+    def test_invalid_schema_dialect_types_return_contributor_feedback(self):
+        for dialect in ({}, [], 7, True):
+            with self.subTest(dialect=dialect):
+                api = FakeAPI()
+                api.raw = json.dumps({'type': 'object', '$schema': dialect}).encode()
+                self.assertEqual(p.evaluate(api, 1, NOW)['decision'], 'needs-contributor-input')
+
     def test_sources_exact_mapping(self):
         for body in ['', BODY+'\n'+BODY, BODY.replace(FILE, 'other.io/widget_v1.json'), BODY.replace(SHA, 'main'), BODY.replace('github.com/', 'github.com.evil.test/'), BODY.replace('/config/', '/../'), BODY.replace(URL, URL+'?token=foo')]:
             self.expect_error('needs-contributor-input', p.parse_sources, body, [FILE])
@@ -172,6 +179,22 @@ class PolicyTests(unittest.TestCase):
     def test_crd_identity(self):
         self.assertEqual(p.source_identities(CRD), {('example.io', 'widget', 'v1')})
         self.assertEqual(p.source_identities(CRD.replace(b'CustomResourceDefinition', b'Deployment')), set())
+
+    def test_malformed_crd_identity_returns_contributor_feedback(self):
+        for raw in (
+            CRD.replace(b'spec:\n  group: example.io\n  names: {kind: Widget}\n  versions: [{name: v1}]', b'spec: null'),
+            CRD.replace(b'spec:\n  group: example.io\n  names: {kind: Widget}\n  versions: [{name: v1}]', b'spec: malformed'),
+            CRD.replace(b'names: {kind: Widget}', b'names: null'),
+            CRD.replace(b'kind: Widget', b'kind: null'),
+            CRD.replace(b'kind: Widget', b'kind: 7'),
+            CRD.replace(b'kind: Widget', b'kind: [Widget]'),
+        ):
+            with self.subTest(raw=raw):
+                self.expect_error('needs-contributor-input', p.source_identities, raw)
+                api = FakeAPI()
+                original_blob = api.blob
+                api.blob = lambda repo, entry, maximum: raw if repo == 'example/operator' else original_blob(repo, entry, maximum)
+                self.assertEqual(p.evaluate(api, 1, NOW)['decision'], 'needs-contributor-input')
 
     def test_yaml_no_objects_or_aliases(self):
         for raw in [b'!!python/object/apply:os.system [echo nope]', b'a: &a [*a]']:

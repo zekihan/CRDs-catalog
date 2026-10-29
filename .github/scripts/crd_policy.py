@@ -149,6 +149,8 @@ def validate_schema(raw):
         validators = [Draft4Validator, Draft6Validator, Draft7Validator, Draft201909Validator, Draft202012Validator]
         by_uri = {v.META_SCHEMA.get("$id", v.META_SCHEMA.get("id")): v for v in validators}
         uri = schema.get("$schema")
+        if uri is not None and not isinstance(uri, str):
+            raise ValueError("JSON Schema dialect must be a string")
         validator = Draft7Validator if uri is None else by_uri.get(uri)
         if validator is None:
             raise ValueError("Unsupported JSON Schema dialect")
@@ -228,11 +230,16 @@ def source_identities(raw):
                 if crd.get("apiVersion") not in ("apiextensions.k8s.io/v1", "apiextensions.k8s.io/v1beta1"):
                     continue
                 spec = crd["spec"]
+                if not isinstance(spec, dict):
+                    raise ValueError("CRD spec must be an object")
+                kind = spec["names"]["kind"]
+                if not isinstance(kind, str):
+                    raise ValueError("CRD kind must be a string")
                 versions = [v["name"] for v in spec.get("versions", [])]
                 if spec.get("version"):
                     versions.append(spec["version"])
                 for version in versions:
-                    identities.add((spec["group"], spec["names"]["kind"].lower(), version))
+                    identities.add((spec["group"], kind.lower(), version))
         return identities
     except (yaml.YAMLError, ValueError, TypeError, KeyError, RecursionError, UnicodeError):
         raise PolicyError("needs-contributor-input", "A supplied source is not a supported plain CRD YAML/JSON document. Link the CRD file, not a Helm template or project homepage.") from None
