@@ -146,6 +146,36 @@ class RefreshTests(unittest.TestCase):
         self.assertFalse(validator.is_valid({"threshold": 1e-5}))
         self.assertEqual(converted["properties"]["threshold"]["default"], 1e-7)
 
+    def test_combinators_preserve_sibling_fields(self):
+        schema = {"type": "object", "properties": {
+            "spec": {"type": "object", "properties": {
+                "mode": {"type": "string"}, "replicas": {"type": "integer"},
+            }},
+        }}
+        active = {"properties": {"spec": {
+            "properties": {"mode": {"enum": ["active"]}}, "required": ["mode"],
+        }}, "required": ["spec"]}
+        for keyword in ("allOf", "anyOf", "oneOf", "not"):
+            with self.subTest(keyword=keyword), tempfile.TemporaryDirectory() as work:
+                rule = active if keyword == "not" else [active]
+                snapshot = {"items": [crd("example.io", "Widget", ["v1"], {**schema, keyword: rule})]}
+                tree = refresh.convert(snapshot, Path(work))
+                converted = json.loads((tree / "example.io/widget_v1.json").read_text())
+                jsonschema.Draft4Validator.check_schema(converted)
+                validator = jsonschema.Draft4Validator(converted)
+                valid_mode, invalid_mode = (
+                    ("passive", "active") if keyword == "not" else ("active", "passive")
+                )
+                valid = {"apiVersion": "example.io/v1", "kind": "Widget",
+                         "spec": {"mode": valid_mode, "replicas": 1}}
+                validator.validate(valid)
+                self.assertFalse(validator.is_valid({
+                    **valid, "spec": {**valid["spec"], "mode": invalid_mode},
+                }))
+                with self.assertRaises(jsonschema.ValidationError) as failure:
+                    validator.validate({**valid, "spec": {**valid["spec"], "unexpected": True}})
+                self.assertEqual(failure.exception.validator, "additionalProperties")
+
     def test_blocked_publish_preserves_existing_catalog(self):
         for blocker in ("file", "dangling symlink"):
             with self.subTest(blocker=blocker), tempfile.TemporaryDirectory() as directory:

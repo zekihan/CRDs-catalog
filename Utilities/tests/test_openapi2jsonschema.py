@@ -44,18 +44,16 @@ class AdditionalPropertiesTests(unittest.TestCase):
             validator.validate({"rules": [{"unexpected": True}]})
         self.assertNotIn("additionalProperties", converted)
 
-    def test_schema_maps_and_combinators(self):
+    def test_schema_maps_and_tuple_items(self):
         for keyword in ("properties", "patternProperties", "definitions", "$defs"):
             with self.subTest(keyword=keyword):
                 schema = {keyword: {"properties": {"type": "object", "properties": {}}}}
                 converted = converter.additional_properties(schema, skip=True)
                 self.assertNotIn("additionalProperties", converted[keyword])
                 self.assertFalse(converted[keyword]["properties"]["additionalProperties"])
-        for keyword in ("allOf", "anyOf", "oneOf", "items"):
-            with self.subTest(keyword=keyword):
-                schema = {keyword: [{"type": "object", "properties": {}}]}
-                converted = converter.additional_properties(schema)
-                self.assertFalse(converted[keyword][0]["additionalProperties"])
+        schema = {"items": [{"type": "object", "properties": {}}]}
+        converted = converter.additional_properties(schema)
+        self.assertFalse(converted["items"][0]["additionalProperties"])
 
     def test_explicit_additional_properties_is_preserved(self):
         schema = {"type": "object", "properties": {}, "additionalProperties": True}
