@@ -33,12 +33,16 @@ def expected_schemas(snapshot):
     expected, clean = set(), []
     for item in items:
         spec = item["spec"]
+        versions = [version for version in spec["versions"]
+                    if version.get("served") is not False]
+        if not versions:
+            continue
         group, kind = spec["group"], spec["names"]["kind"]
         if not re.fullmatch(r"[a-z0-9.-]+", group) or "." not in group:
             raise RuntimeError(f"Unsafe group: {group}")
         if not re.fullmatch(r"[A-Za-z0-9]+", kind):
             raise RuntimeError(f"Unsafe kind: {kind}")
-        for version in spec["versions"]:
+        for version in versions:
             name = version["name"]
             if not re.fullmatch(r"[a-z0-9]+", name):
                 raise RuntimeError(f"Unsafe version: {name}")
@@ -49,7 +53,10 @@ def expected_schemas(snapshot):
                 raise RuntimeError(f"Duplicate schema: {filename}")
             expected.add(filename)
         clean.append({"apiVersion": item["apiVersion"],
-                      "kind": "CustomResourceDefinition", "spec": spec})
+                      "kind": "CustomResourceDefinition",
+                      "spec": {**spec, "versions": versions}})
+    if not expected:
+        raise RuntimeError("No served CRD versions. Refusing an empty export.")
     return expected, {"items": clean}
 
 
