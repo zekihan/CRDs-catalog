@@ -231,6 +231,30 @@ class OutputDiscoveryTests(unittest.TestCase):
                 self.assertEqual(output.read_bytes(), previous)
                 self.assertFalse((root / "other_v1.json").exists())
 
+    def test_output_does_not_overwrite_an_input(self):
+        manifest = {"kind": "List", "items": [
+            self.crd("example.io", kind="Other"), self.crd("example.io"),
+        ]}
+        original = json.dumps(manifest)
+        for alias in (False, True):
+            with self.subTest(alias=alias), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                output = root / "widget_v1.json"
+                source = root / "crds.json" if alias else output
+                source.write_text(original)
+                if alias:
+                    output.hardlink_to(source)
+                env = os.environ.copy()
+                env.pop("FILENAME_FORMAT", None)
+                result = subprocess.run(
+                    [sys.executable, str(Path(converter.__file__).resolve()), str(source)],
+                    cwd=root, env=env, capture_output=True, text=True, timeout=30,
+                )
+                self.assertEqual(source.read_text(), original)
+                self.assertFalse((root / "other_v1.json").exists())
+                self.assertEqual(result.returncode, 1, result.stderr)
+                self.assertIn("would overwrite input file", result.stderr)
+
     def test_fullgroup_format_keeps_distinct_schemas(self):
         with tempfile.TemporaryDirectory(prefix="converter-distinct-") as directory:
             root = Path(directory)
