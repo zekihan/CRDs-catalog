@@ -73,6 +73,32 @@ class RefreshTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "No served CRD versions"):
             refresh.expected_schemas({"items": [item]})
 
+    def test_converts_explicitly_nullable_schema_types(self):
+        literal = {"type": "string", "nullable": True}
+        schema = {"type": "object", "required": ["labels"], "properties": {
+            "labels": {"type": "object", "nullable": True,
+                       "additionalProperties": {"type": "string"}},
+            "ports": {"type": "array", "items": {
+                "type": "string", "format": "int-or-string", "nullable": True,
+                "enum": [None, 80, "http"],
+            }},
+            "name": {"type": "string", "nullable": False},
+            "payload": {"type": "object", "default": literal},
+        }}
+        snapshot = {"items": [crd("example.io", "Widget", ["v1"], schema)]}
+        with tempfile.TemporaryDirectory() as work:
+            tree = refresh.convert(snapshot, Path(work))
+            converted = json.loads((tree / "example.io/widget_v1.json").read_text())
+        jsonschema.Draft4Validator.check_schema(converted)
+        validator = jsonschema.Draft4Validator(converted)
+        validator.validate({"labels": None, "ports": [None, 80, "http"]})
+        validator.validate({"labels": {"tier": "backup"}, "name": "example"})
+        for instance in ({}, {"labels": {"tier": 1}}, {"labels": None, "name": None},
+                         {"labels": None, "ports": [81]}):
+            with self.subTest(instance=instance):
+                self.assertFalse(validator.is_valid(instance))
+        self.assertEqual(converted["properties"]["payload"]["default"], literal)
+
     def test_rejects_empty_and_unsafe_input(self):
         with self.assertRaisesRegex(RuntimeError, "no CRDs"):
             refresh.expected_schemas({"items": []})

@@ -93,11 +93,26 @@ def append_no_duplicates(obj, key, value):
         obj[key].append(value)
 
 
+def add_nullable_types(schema):
+    """Express OpenAPI nullable types as JSON Schema type unions."""
+    if not isinstance(schema, dict):
+        return
+    if schema.get("nullable") is True:
+        types = schema.get("type")
+        if isinstance(types, str):
+            types = [types]
+        if isinstance(types, list) and "null" not in types:
+            schema["type"] = [*types, "null"]
+    for child in schema_children(schema):
+        add_nullable_types(child)
+
+
 def write_schema_file(schema, filename):
     schemaJSON = ""
 
     schema = additional_properties(schema, skip=not os.getenv("DENY_ROOT_ADDITIONAL_PROPERTIES"))
     schema = replace_int_or_string(schema)
+    add_nullable_types(schema)
     schemaJSON = json.dumps(schema, indent=2)
 
     # Dealing with user input here..
