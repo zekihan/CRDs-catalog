@@ -50,8 +50,10 @@ def replace_int_or_string(data):
     data = copy.deepcopy(data)
 
     def replace(schema):
-        if schema.get("format") == "int-or-string":
+        legacy_format = schema.get("format") == "int-or-string"
+        if legacy_format:
             del schema["format"]
+        if legacy_format or schema.get("x-kubernetes-int-or-string") is True:
             schema["type"] = ["string", "integer"]
         for child in schema_children(schema):
             replace(child)
