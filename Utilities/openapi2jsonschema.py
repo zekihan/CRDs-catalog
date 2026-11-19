@@ -218,6 +218,12 @@ if __name__ == "__main__":
 
   # Discover every output before publishing any schema. Different groups can
   # share kind/version names, and custom formats are flattened to basenames.
+  local_inputs = {}
+  for source in sys.argv[1:]:
+      if not source.startswith("http"):
+          info = os.stat(source)
+          local_inputs[(info.st_dev, info.st_ino)] = source
+
   sources_by_filename = {}
   for schema, filename, source in planned_schemas:
       output = os.path.basename(filename)
@@ -227,6 +233,15 @@ if __name__ == "__main__":
                    "use a distinct FILENAME_FORMAT such as "
                    "{fullgroup}_{kind}_{version} or separate the inputs")
       sources_by_filename[output] = source
+
+      try:
+          info = os.stat(output)
+      except FileNotFoundError:
+          continue
+      input_path = local_inputs.get((info.st_dev, info.st_ino))
+      if input_path is not None:
+          sys.exit(f"Output filename {output!r} would overwrite input file {input_path!r}; "
+                   "use a distinct FILENAME_FORMAT or run from another directory")
 
   for schema, filename, source in planned_schemas:
       write_schema_file(schema, filename)
