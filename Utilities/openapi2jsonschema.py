@@ -37,7 +37,8 @@ def schema_children(data):
 def additional_properties(data, skip=False):
     "This recreates the behaviour of kubectl at https://github.com/kubernetes/kubernetes/blob/225b9119d6a8f03fcbe3cc3d590c261965d928d0/pkg/kubectl/validation/schema.go#L312"
     if isinstance(data, dict):
-        if "properties" in data and not skip:
+        preserve_unknown = data.get("x-kubernetes-preserve-unknown-fields") is True
+        if "properties" in data and not skip and not preserve_unknown:
             if "additionalProperties" not in data:
                 data["additionalProperties"] = False
         for schema in schema_children(data):

@@ -99,6 +99,25 @@ class RefreshTests(unittest.TestCase):
                 self.assertFalse(validator.is_valid(instance))
         self.assertEqual(converted["properties"]["payload"]["default"], literal)
 
+    def test_preserves_unknown_fields_alongside_declared_properties(self):
+        schema = {"type": "object", "properties": {
+            "config": {"type": "object", "x-kubernetes-preserve-unknown-fields": True,
+                       "properties": {
+                           "spec": {"type": "object", "properties": {"mode": {"type": "string"}}},
+                           "labels": {"type": "object", "additionalProperties": {"type": "string"}},
+                       }},
+        }}
+        snapshot = {"items": [crd("example.io", "Widget", ["v1"], schema)]}
+        with tempfile.TemporaryDirectory() as work:
+            tree = refresh.convert(snapshot, Path(work))
+            converted = json.loads((tree / "example.io/widget_v1.json").read_text())
+        jsonschema.Draft4Validator.check_schema(converted)
+        validator = jsonschema.Draft4Validator(converted)
+        validator.validate({"config": {"spec": {"mode": "active"}, "labels": {"tier": "test"},
+                                       "extension": {"arbitrary": [1, True]}}})
+        self.assertFalse(validator.is_valid({"config": {"spec": {"unexpected": True}}}))
+        self.assertFalse(validator.is_valid({"config": {"labels": {"tier": 1}}}))
+
     def test_rejects_empty_and_unsafe_input(self):
         with self.assertRaisesRegex(RuntimeError, "no CRDs"):
             refresh.expected_schemas({"items": []})
