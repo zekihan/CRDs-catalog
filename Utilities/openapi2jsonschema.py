@@ -13,9 +13,11 @@ if 'DISABLE_SSL_CERT_VALIDATION' in os.environ:
     import ssl
     ssl._create_default_https_context = ssl._create_unverified_context
 
-def schema_children(data):
+def schema_children(data, *, skip_keywords=()):
     """Yield subschemas, excluding instance data such as defaults and enums."""
     for keyword, value in data.items():
+        if keyword in skip_keywords:
+            continue
         if keyword in ("properties", "patternProperties", "definitions", "$defs",
                        "dependencies", "dependentSchemas"):
             if isinstance(value, dict):
@@ -45,7 +47,8 @@ def additional_properties(data, skip=False):
         if data.get("x-kubernetes-embedded-resource") is True:
             # Kubernetes does not apply structural pruning inside embedded metadata.
             metadata = data.get("properties", {}).get("metadata")
-        for schema in schema_children(data):
+        # Combinator branches only constrain fields declared in the structural schema.
+        for schema in schema_children(data, skip_keywords=("allOf", "anyOf", "oneOf", "not")):
             if schema is not metadata:
                 additional_properties(schema)
     return data
