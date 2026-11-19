@@ -104,6 +104,21 @@ class SchemaTransformationTests(unittest.TestCase):
         self.assertEqual(converted["properties"]["port"]["default"], 80)
         self.assertEqual(schema["properties"]["port"], field)
 
+    def test_int_or_string_extension_limits_types(self):
+        schema = {"type": "object", "properties": {
+            "port": {"x-kubernetes-int-or-string": True, "minimum": 1},
+            "name": {"type": "string", "x-kubernetes-int-or-string": False},
+        }}
+        converted = converter.replace_int_or_string(schema)
+        jsonschema.Draft4Validator.check_schema(converted)
+        validator = jsonschema.Draft4Validator(converted)
+        for value in (80, "http"):
+            validator.validate({"port": value, "name": "web"})
+        for value in (True, 1.5, {}, 0):
+            with self.subTest(value=value):
+                self.assertFalse(validator.is_valid({"port": value}))
+        self.assertFalse(validator.is_valid({"name": 80}))
+
     def test_int_or_string_in_schema_positions(self):
         field = {"format": "int-or-string", "minimum": 2, "minLength": 2}
         schemas = [field, {"items": field}, {"oneOf": [field]},

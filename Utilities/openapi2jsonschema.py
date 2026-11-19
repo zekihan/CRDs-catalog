@@ -50,8 +50,10 @@ def replace_int_or_string(data):
     data = copy.deepcopy(data)
 
     def replace(schema):
-        if schema.get("format") == "int-or-string":
+        legacy_format = schema.get("format") == "int-or-string"
+        if legacy_format:
             del schema["format"]
+        if legacy_format or schema.get("x-kubernetes-int-or-string") is True:
             schema["type"] = ["string", "integer"]
         for child in schema_children(schema):
             replace(child)
@@ -146,11 +148,17 @@ if __name__ == "__main__":
       if crdFile.startswith("http"):
         f = urllib.request.urlopen(crdFile)
       else:
-        f = open(crdFile)
+        f = open(crdFile, "rb")
       with f:
           defs = []
-          yaml.SafeLoader.add_constructor(u'tag:yaml.org,2002:value', construct_value)
-          for y in yaml.load_all(f, Loader=yaml.SafeLoader):
+          content = f.read()
+          # PyYAML can read JSON numbers in exponent notation as strings.
+          try:
+              documents = [json.loads(content, parse_constant=str)]
+          except json.JSONDecodeError:
+              yaml.SafeLoader.add_constructor(u'tag:yaml.org,2002:value', construct_value)
+              documents = yaml.load_all(content, Loader=yaml.SafeLoader)
+          for y in documents:
               if y is None:
                   continue
               if "items" in y:
