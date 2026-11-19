@@ -47,6 +47,32 @@ class RefreshTests(unittest.TestCase):
             with self.assertRaises(jsonschema.ValidationError):
                 jsonschema.validate({"spec": {"unknown": True}}, converted)
 
+    def test_exports_only_served_versions_with_their_own_schemas(self):
+        item = crd("example.io", "Widget", ["v1beta1", "v1", "v2"])
+        retired, stable, newer = item["spec"]["versions"]
+        retired["served"] = False
+        for version, value_type in ((stable, "string"), (newer, "integer")):
+            version["served"] = True
+            version["schema"]["openAPIV3Schema"] = {
+                "type": "object", "properties": {"value": {"type": value_type}},
+            }
+        with tempfile.TemporaryDirectory() as work:
+            group = refresh.convert({"items": [item]}, Path(work)) / "example.io"
+            self.assertEqual({path.name for path in group.iterdir()},
+                             {"widget_v1.json", "widget_v2.json"})
+            for name, valid, invalid in (("v1", "five", 5), ("v2", 5, "five")):
+                with self.subTest(version=name):
+                    schema = json.loads((group / f"widget_{name}.json").read_text())
+                    validator = jsonschema.Draft4Validator(schema)
+                    validator.validate({"value": valid})
+                    self.assertFalse(validator.is_valid({"value": invalid}))
+
+    def test_rejects_snapshot_with_no_served_versions(self):
+        item = crd("example.io", "Widget", ["v1"])
+        item["spec"]["versions"][0]["served"] = False
+        with self.assertRaisesRegex(RuntimeError, "No served CRD versions"):
+            refresh.expected_schemas({"items": [item]})
+
     def test_rejects_empty_and_unsafe_input(self):
         with self.assertRaisesRegex(RuntimeError, "no CRDs"):
             refresh.expected_schemas({"items": []})
