@@ -148,11 +148,17 @@ if __name__ == "__main__":
       if crdFile.startswith("http"):
         f = urllib.request.urlopen(crdFile)
       else:
-        f = open(crdFile)
+        f = open(crdFile, "rb")
       with f:
           defs = []
-          yaml.SafeLoader.add_constructor(u'tag:yaml.org,2002:value', construct_value)
-          for y in yaml.load_all(f, Loader=yaml.SafeLoader):
+          content = f.read()
+          # PyYAML can read JSON numbers in exponent notation as strings.
+          try:
+              documents = [json.loads(content, parse_constant=str)]
+          except json.JSONDecodeError:
+              yaml.SafeLoader.add_constructor(u'tag:yaml.org,2002:value', construct_value)
+              documents = yaml.load_all(content, Loader=yaml.SafeLoader)
+          for y in documents:
               if y is None:
                   continue
               if "items" in y:

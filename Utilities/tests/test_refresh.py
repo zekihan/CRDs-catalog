@@ -50,6 +50,20 @@ class RefreshTests(unittest.TestCase):
             with self.assertRaises(jsonschema.ValidationError):
                 jsonschema.validate({"spec": {"unknown": True}}, converted)
 
+    def test_preserves_exponent_numbers_in_json_snapshot(self):
+        schema = {"type": "object", "properties": {
+            "threshold": {"type": "number", "maximum": 1e-6, "default": 1e-7},
+        }}
+        snapshot = {"items": [crd("example.io", "Widget", ["v1"], schema)]}
+        with tempfile.TemporaryDirectory() as work:
+            tree = refresh.convert(snapshot, Path(work))
+            converted = json.loads((tree / "example.io/widget_v1.json").read_text())
+        jsonschema.Draft4Validator.check_schema(converted)
+        validator = jsonschema.Draft4Validator(converted)
+        validator.validate({"threshold": 1e-7})
+        self.assertFalse(validator.is_valid({"threshold": 1e-5}))
+        self.assertEqual(converted["properties"]["threshold"]["default"], 1e-7)
+
     def test_blocked_publish_preserves_existing_catalog(self):
         for blocker in ("file", "dangling symlink"):
             with self.subTest(blocker=blocker), tempfile.TemporaryDirectory() as directory:
