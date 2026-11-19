@@ -50,6 +50,25 @@ class RefreshTests(unittest.TestCase):
             with self.assertRaises(jsonschema.ValidationError):
                 jsonschema.validate({"spec": {"unknown": True}}, converted)
 
+    def test_rejects_duplicate_elements_in_list_sets(self):
+        schema = {"type": "object", "properties": {"spec": {
+            "type": "object", "properties": {
+                "members": {"type": "array", "items": {"type": "string"},
+                            "x-kubernetes-list-type": "set"},
+                "steps": {"type": "array", "items": {"type": "string"},
+                          "x-kubernetes-list-type": "atomic"},
+            },
+        }}}
+        snapshot = {"items": [crd("example.io", "Widget", ["v1"], schema)]}
+        with tempfile.TemporaryDirectory() as work:
+            tree = refresh.convert(snapshot, Path(work))
+            converted = json.loads((tree / "example.io/widget_v1.json").read_text())
+        jsonschema.Draft4Validator.check_schema(converted)
+        validator = jsonschema.Draft4Validator(converted)
+        validator.validate({"spec": {"members": ["api", "web"], "steps": ["run", "run"]}})
+        with self.assertRaises(jsonschema.ValidationError):
+            validator.validate({"spec": {"members": ["api", "api"]}})
+
     def test_preserves_exponent_numbers_in_json_snapshot(self):
         schema = {"type": "object", "properties": {
             "threshold": {"type": "number", "maximum": 1e-6, "default": 1e-7},

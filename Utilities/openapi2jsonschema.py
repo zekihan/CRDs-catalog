@@ -110,12 +110,22 @@ def add_nullable_types(schema):
         add_nullable_types(child)
 
 
+def add_set_uniqueness(schema):
+    if not isinstance(schema, dict):
+        return
+    if schema.get("x-kubernetes-list-type") == "set":
+        schema["uniqueItems"] = True
+    for child in schema_children(schema):
+        add_set_uniqueness(child)
+
+
 def write_schema_file(schema, filename):
     schemaJSON = ""
 
     schema = additional_properties(schema, skip=not os.getenv("DENY_ROOT_ADDITIONAL_PROPERTIES"))
     schema = replace_int_or_string(schema)
     add_nullable_types(schema)
+    add_set_uniqueness(schema)
     schemaJSON = json.dumps(schema, indent=2)
 
     # Dealing with user input here..
