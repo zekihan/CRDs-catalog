@@ -16,7 +16,7 @@ class CatalogTests(unittest.TestCase):
         for path in files:
             with self.subTest(path=str(path.relative_to(ROOT))):
                 self.assertRegex(path.parent.name, r"^[a-z0-9.-]+$")
-                self.assertRegex(path.name, r"^[a-z0-9]+_[a-z0-9]+\.json$")
+                self.assertRegex(path.name, r"^[a-z][a-z0-9-]*_[a-z][a-z0-9-]*\.json$")
                 # Patterns use RE2 syntax such as \\pZ, which Python's format checker rejects.
                 META.validate(json.loads(path.read_text()))
 

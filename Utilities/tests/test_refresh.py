@@ -50,6 +50,17 @@ class RefreshTests(unittest.TestCase):
             with self.assertRaises(jsonschema.ValidationError):
                 jsonschema.validate({"spec": {"unknown": True}}, converted)
 
+    def test_exports_hyphenated_kinds_and_versions(self):
+        for kind, version, filename in (
+            ("Task-Template", "v1", "task-template_v1.json"),
+            ("Widget", "v1-preview", "widget_v1-preview.json"),
+        ):
+            with self.subTest(kind=kind, version=version), tempfile.TemporaryDirectory() as work:
+                snapshot = {"items": [crd("example.io", kind, [version])]}
+                tree = refresh.convert(snapshot, Path(work))
+                schema = json.loads((tree / "example.io" / filename).read_text())
+                jsonschema.Draft4Validator.check_schema(schema)
+
     def test_rejects_duplicate_elements_in_list_sets(self):
         schema = {"type": "object", "properties": {"spec": {
             "type": "object", "properties": {
@@ -192,6 +203,8 @@ class RefreshTests(unittest.TestCase):
             refresh.expected_schemas({"items": []})
         with self.assertRaisesRegex(RuntimeError, "Unsafe group"):
             refresh.expected_schemas({"items": [crd("../evil", "Kind", ["v1"])]})
+        with self.assertRaisesRegex(RuntimeError, "Unsafe kind"):
+            refresh.expected_schemas({"items": [crd("a.io", "Task/Template", ["v1"])]})
         with self.assertRaisesRegex(RuntimeError, "Unsafe version"):
             refresh.expected_schemas({"items": [crd("a.io", "Kind", ["v1/../x"])]})
 
