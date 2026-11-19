@@ -1,5 +1,8 @@
 import importlib.util
 import json
+import shutil
+import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -46,6 +49,39 @@ class RefreshTests(unittest.TestCase):
             jsonschema.validate({"spec": {"properties": ["a"]}}, converted)
             with self.assertRaises(jsonschema.ValidationError):
                 jsonschema.validate({"spec": {"unknown": True}}, converted)
+
+    def test_blocked_publish_preserves_existing_catalog(self):
+        for blocker in ("file", "dangling symlink"):
+            with self.subTest(blocker=blocker), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory).resolve()
+                utilities = root / "Utilities"
+                utilities.mkdir()
+                for script in ("refresh.py", "openapi2jsonschema.py"):
+                    shutil.copyfile(ROOT / "Utilities" / script, utilities / script)
+                group = root / "current.example"
+                group.mkdir()
+                old_schema = group / "widget_v1.json"
+                original = '{"description": "old schema"}\n'
+                old_schema.write_text(original)
+                destination = root / "unavailable.example"
+                if blocker == "file":
+                    destination.write_text("keep me")
+                else:
+                    destination.symlink_to(root / "missing")
+                snapshot = root / "input.json"
+                snapshot.write_text(json.dumps({"items": [
+                    crd("current.example", "Widget", ["v2"]),
+                    crd("unavailable.example", "Widget", ["v1"]),
+                ]}))
+                result = subprocess.run(
+                    [sys.executable, str(utilities / "refresh.py"), "--input", str(snapshot)],
+                    cwd=root, capture_output=True, text=True, timeout=30, check=False,
+                )
+                self.assertEqual(result.returncode, 1, result.stderr)
+                self.assertEqual(list(group.iterdir()), [old_schema], result.stderr)
+                self.assertEqual(old_schema.read_text(), original)
+                self.assertEqual(result.stderr.strip(),
+                                 f"Stopped: Refusing to overwrite schema destination: {destination}")
 
     def test_exports_only_served_versions_with_their_own_schemas(self):
         item = crd("example.io", "Widget", ["v1beta1", "v1", "v2"])
@@ -98,6 +134,25 @@ class RefreshTests(unittest.TestCase):
             with self.subTest(instance=instance):
                 self.assertFalse(validator.is_valid(instance))
         self.assertEqual(converted["properties"]["payload"]["default"], literal)
+
+    def test_preserves_unknown_fields_alongside_declared_properties(self):
+        schema = {"type": "object", "properties": {
+            "config": {"type": "object", "x-kubernetes-preserve-unknown-fields": True,
+                       "properties": {
+                           "spec": {"type": "object", "properties": {"mode": {"type": "string"}}},
+                           "labels": {"type": "object", "additionalProperties": {"type": "string"}},
+                       }},
+        }}
+        snapshot = {"items": [crd("example.io", "Widget", ["v1"], schema)]}
+        with tempfile.TemporaryDirectory() as work:
+            tree = refresh.convert(snapshot, Path(work))
+            converted = json.loads((tree / "example.io/widget_v1.json").read_text())
+        jsonschema.Draft4Validator.check_schema(converted)
+        validator = jsonschema.Draft4Validator(converted)
+        validator.validate({"config": {"spec": {"mode": "active"}, "labels": {"tier": "test"},
+                                       "extension": {"arbitrary": [1, True]}}})
+        self.assertFalse(validator.is_valid({"config": {"spec": {"unexpected": True}}}))
+        self.assertFalse(validator.is_valid({"config": {"labels": {"tier": 1}}}))
 
     def test_rejects_empty_and_unsafe_input(self):
         with self.assertRaisesRegex(RuntimeError, "no CRDs"):
