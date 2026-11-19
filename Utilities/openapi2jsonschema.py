@@ -41,8 +41,13 @@ def additional_properties(data, skip=False):
         if "properties" in data and not skip and not preserve_unknown:
             if "additionalProperties" not in data:
                 data["additionalProperties"] = False
+        metadata = None
+        if data.get("x-kubernetes-embedded-resource") is True:
+            # Kubernetes does not apply structural pruning inside embedded metadata.
+            metadata = data.get("properties", {}).get("metadata")
         for schema in schema_children(data):
-            additional_properties(schema)
+            if schema is not metadata:
+                additional_properties(schema)
     return data
 
 
@@ -119,6 +124,23 @@ def add_set_uniqueness(schema):
         add_set_uniqueness(child)
 
 
+def add_embedded_resource_fields(schema):
+    if not isinstance(schema, dict):
+        return
+    if schema.get("x-kubernetes-embedded-resource") is True:
+        properties = schema.setdefault("properties", {})
+        for name in ("apiVersion", "kind"):
+            field = properties.setdefault(name, {})
+            field["type"] = "string"
+            field["minLength"] = max(field.get("minLength", 0), 1)
+            if field.get("default") is None:
+                append_no_duplicates(schema, "required", name)
+        # Kubernetes decodes null metadata as an empty ObjectMeta.
+        properties.setdefault("metadata", {"type": ["object", "null"]})
+    for child in schema_children(schema):
+        add_embedded_resource_fields(child)
+
+
 def write_schema_file(schema, filename):
     schemaJSON = ""
 
@@ -126,6 +148,7 @@ def write_schema_file(schema, filename):
     schema = replace_int_or_string(schema)
     add_nullable_types(schema)
     add_set_uniqueness(schema)
+    add_embedded_resource_fields(schema)
     schemaJSON = json.dumps(schema, indent=2)
 
     # Dealing with user input here..

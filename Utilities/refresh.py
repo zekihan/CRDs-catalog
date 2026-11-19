@@ -18,6 +18,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 CONVERTER = ROOT / "Utilities/openapi2jsonschema.py"
+DNS1035_LABEL = re.compile(r"[a-z](?:[a-z0-9-]{0,61}[a-z0-9])?")
 
 
 def schema_dirs(root):
@@ -40,11 +41,11 @@ def expected_schemas(snapshot):
         group, kind = spec["group"], spec["names"]["kind"]
         if not re.fullmatch(r"[a-z0-9.-]+", group) or "." not in group:
             raise RuntimeError(f"Unsafe group: {group}")
-        if not re.fullmatch(r"[A-Za-z0-9]+", kind):
+        if not DNS1035_LABEL.fullmatch(kind.lower()):
             raise RuntimeError(f"Unsafe kind: {kind}")
         for version in versions:
             name = version["name"]
-            if not re.fullmatch(r"[a-z0-9]+", name):
+            if not DNS1035_LABEL.fullmatch(name):
                 raise RuntimeError(f"Unsafe version: {name}")
             if "openAPIV3Schema" not in version.get("schema", {}):
                 raise RuntimeError(f"Missing schema: {group}/{kind}/{name}")

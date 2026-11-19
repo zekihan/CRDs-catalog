@@ -50,6 +50,69 @@ class RefreshTests(unittest.TestCase):
             with self.assertRaises(jsonschema.ValidationError):
                 jsonschema.validate({"spec": {"unknown": True}}, converted)
 
+    def test_exports_hyphenated_kinds_and_versions(self):
+        for kind, version, filename in (
+            ("Task-Template", "v1", "task-template_v1.json"),
+            ("Widget", "v1-preview", "widget_v1-preview.json"),
+        ):
+            with self.subTest(kind=kind, version=version), tempfile.TemporaryDirectory() as work:
+                snapshot = {"items": [crd("example.io", kind, [version])]}
+                tree = refresh.convert(snapshot, Path(work))
+                schema = json.loads((tree / "example.io" / filename).read_text())
+                jsonschema.Draft4Validator.check_schema(schema)
+
+    def test_preserves_implicit_fields_of_embedded_resources(self):
+        schema = {"type": "object", "properties": {
+            "templates": {"type": "array", "items": {
+                "type": "object", "x-kubernetes-embedded-resource": True,
+                "properties": {"replicas": {"type": "integer"}},
+                "required": ["replicas"],
+            }},
+        }}
+        snapshot = {"items": [crd("example.io", "Widget", ["v1"], schema)]}
+        with tempfile.TemporaryDirectory() as work:
+            tree = refresh.convert(snapshot, Path(work))
+            converted = json.loads((tree / "example.io/widget_v1.json").read_text())
+        jsonschema.Draft4Validator.check_schema(converted)
+        validator = jsonschema.Draft4Validator(converted)
+        template = {"apiVersion": "example.io/v1", "kind": "Workload", "replicas": 1}
+        validator.validate({"templates": [template]})
+        validator.validate({"templates": [{**template, "metadata": {"name": "example"}}]})
+        validator.validate({"templates": [{**template, "metadata": None}]})
+        for key in template:
+            with self.subTest(missing=key):
+                instance = {name: value for name, value in template.items() if name != key}
+                self.assertFalse(validator.is_valid({"templates": [instance]}))
+        for invalid in ({"apiVersion": 1}, {"kind": ""}, {"metadata": []}, {"unexpected": True}):
+            with self.subTest(invalid=invalid):
+                self.assertFalse(validator.is_valid({"templates": [{**template, **invalid}]}))
+
+    def test_preserves_declared_constraints_on_embedded_resources(self):
+        schema = {"type": "object", "properties": {
+            "template": {"type": "object", "x-kubernetes-embedded-resource": True,
+                         "x-kubernetes-preserve-unknown-fields": True, "properties": {
+                             "kind": {"type": "string", "enum": ["Workload"], "default": "Workload"},
+                             "metadata": {"type": "object", "properties": {
+                                 "labels": {"type": "object", "properties": {"tier": {"type": "string"}}},
+                             }},
+                         }},
+        }}
+        snapshot = {"items": [crd("example.io", "Widget", ["v1"], schema)]}
+        with tempfile.TemporaryDirectory() as work:
+            tree = refresh.convert(snapshot, Path(work))
+            converted = json.loads((tree / "example.io/widget_v1.json").read_text())
+        jsonschema.Draft4Validator.check_schema(converted)
+        validator = jsonschema.Draft4Validator(converted)
+        template = {"apiVersion": "example.io/v1", "spec": {"arbitrary": [1, True]},
+                    "metadata": {"name": "example", "labels": {"tier": "test", "extra": "ok"}}}
+        validator.validate({"template": template})
+        self.assertFalse(validator.is_valid({"template": {"kind": "Workload"}}))
+        self.assertFalse(validator.is_valid({"template": {**template, "kind": "Other"}}))
+        self.assertFalse(validator.is_valid({"template": {
+            **template, "metadata": {"labels": {"tier": 1}},
+        }}))
+        self.assertEqual(converted["properties"]["template"]["properties"]["kind"]["default"], "Workload")
+
     def test_rejects_duplicate_elements_in_list_sets(self):
         schema = {"type": "object", "properties": {"spec": {
             "type": "object", "properties": {
@@ -192,6 +255,8 @@ class RefreshTests(unittest.TestCase):
             refresh.expected_schemas({"items": []})
         with self.assertRaisesRegex(RuntimeError, "Unsafe group"):
             refresh.expected_schemas({"items": [crd("../evil", "Kind", ["v1"])]})
+        with self.assertRaisesRegex(RuntimeError, "Unsafe kind"):
+            refresh.expected_schemas({"items": [crd("a.io", "Task/Template", ["v1"])]})
         with self.assertRaisesRegex(RuntimeError, "Unsafe version"):
             refresh.expected_schemas({"items": [crd("a.io", "Kind", ["v1/../x"])]})
 
