@@ -89,11 +89,19 @@ def convert(snapshot, workdir):
 
 
 def publish(tree, root):
-    for directory in schema_dirs(root):
+    existing = schema_dirs(root)
+    replacements = sorted(tree.iterdir())
+    for directory in existing:
         if directory.is_symlink():
             raise RuntimeError(f"Refusing symlink schema directory: {directory}")
+    for directory in replacements:
+        destination = root / directory.name
+        if destination not in existing and os.path.lexists(destination):
+            raise RuntimeError(f"Refusing to overwrite schema destination: {destination}")
+
+    for directory in existing:
         shutil.rmtree(directory)
-    for directory in sorted(tree.iterdir()):
+    for directory in replacements:
         shutil.copytree(directory, root / directory.name)
 
 

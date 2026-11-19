@@ -1,5 +1,8 @@
 import importlib.util
 import json
+import shutil
+import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -46,6 +49,39 @@ class RefreshTests(unittest.TestCase):
             jsonschema.validate({"spec": {"properties": ["a"]}}, converted)
             with self.assertRaises(jsonschema.ValidationError):
                 jsonschema.validate({"spec": {"unknown": True}}, converted)
+
+    def test_blocked_publish_preserves_existing_catalog(self):
+        for blocker in ("file", "dangling symlink"):
+            with self.subTest(blocker=blocker), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory).resolve()
+                utilities = root / "Utilities"
+                utilities.mkdir()
+                for script in ("refresh.py", "openapi2jsonschema.py"):
+                    shutil.copyfile(ROOT / "Utilities" / script, utilities / script)
+                group = root / "current.example"
+                group.mkdir()
+                old_schema = group / "widget_v1.json"
+                original = '{"description": "old schema"}\n'
+                old_schema.write_text(original)
+                destination = root / "unavailable.example"
+                if blocker == "file":
+                    destination.write_text("keep me")
+                else:
+                    destination.symlink_to(root / "missing")
+                snapshot = root / "input.json"
+                snapshot.write_text(json.dumps({"items": [
+                    crd("current.example", "Widget", ["v2"]),
+                    crd("unavailable.example", "Widget", ["v1"]),
+                ]}))
+                result = subprocess.run(
+                    [sys.executable, str(utilities / "refresh.py"), "--input", str(snapshot)],
+                    cwd=root, capture_output=True, text=True, timeout=30, check=False,
+                )
+                self.assertEqual(result.returncode, 1, result.stderr)
+                self.assertEqual(list(group.iterdir()), [old_schema], result.stderr)
+                self.assertEqual(old_schema.read_text(), original)
+                self.assertEqual(result.stderr.strip(),
+                                 f"Stopped: Refusing to overwrite schema destination: {destination}")
 
     def test_exports_only_served_versions_with_their_own_schemas(self):
         item = crd("example.io", "Widget", ["v1beta1", "v1", "v2"])
