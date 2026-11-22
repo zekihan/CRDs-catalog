@@ -39,7 +39,8 @@ def expected_schemas(snapshot):
         if not versions:
             continue
         group, kind = spec["group"], spec["names"]["kind"]
-        if not re.fullmatch(r"[a-z0-9.-]+", group) or "." not in group:
+        if (not re.fullmatch(r"[a-z0-9.-]+", group) or "." not in group
+                or group in (".", "..")):
             raise RuntimeError(f"Unsafe group: {group}")
         if not DNS1035_LABEL.fullmatch(kind.lower()):
             raise RuntimeError(f"Unsafe kind: {kind}")

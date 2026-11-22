@@ -5,7 +5,7 @@ JSON schemas for the CustomResourceDefinitions installed in the
 [kubeconform](https://github.com/yannh/kubeconform):
 
 ```
-<group>/<kind>_<version>.json
+<group>/<lowercase-kind>_<lowercase-version>.json
 ```
 
 Only CRDs that run in the cluster live here. Homelab CI lists this catalog
@@ -30,9 +30,13 @@ git diff --stat
 .venv/bin/python -m unittest discover -s Utilities/tests
 ```
 
-`refresh.py` replaces every group directory with the cluster's current CRDs,
-so removed CRDs disappear too. `--input crds.json` converts a saved
-`kubectl get crds -o json` instead of reading the cluster.
+`refresh.py` exports served CRD versions and replaces every non-hidden top-level
+directory whose name contains a dot, so removed CRDs disappear too. Do not keep
+unrelated files in those directories. `--input crds.json` reads a saved
+`kubectl get crds -o json` instead of contacting the cluster; it still replaces
+the catalog directories. An empty snapshot, a missing schema, or a duplicate
+output name stops the export before publication. Publication itself removes the
+old directories before copying the replacements.
 
 `Utilities/openapi2jsonschema.py` comes from kubeconform through
 datreeio/CRDs-catalog, with a fix that only descends into subschemas, so
