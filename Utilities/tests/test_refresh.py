@@ -235,6 +235,19 @@ class RefreshTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "No served CRD versions"):
             refresh.expected_schemas({"items": [item]})
 
+    def test_rejects_missing_schema_and_duplicate_output_names(self):
+        missing = crd("example.io", "Widget", ["v1"])
+        del missing["spec"]["versions"][0]["schema"]
+        duplicate = crd("example.io", "WIDGET", ["v1"])
+        cases = (
+            ([missing], "Missing schema: example.io/Widget/v1"),
+            ([crd("example.io", "Widget", ["v1"]), duplicate],
+             "Duplicate schema: example.io_widget_v1.json"),
+        )
+        for items, message in cases:
+            with self.subTest(message=message), self.assertRaisesRegex(RuntimeError, message):
+                refresh.expected_schemas({"items": items})
+
     def test_converts_explicitly_nullable_schema_types(self):
         literal = {"type": "string", "nullable": True}
         schema = {"type": "object", "required": ["labels"], "properties": {
@@ -285,6 +298,9 @@ class RefreshTests(unittest.TestCase):
             refresh.expected_schemas({"items": []})
         with self.assertRaisesRegex(RuntimeError, "Unsafe group"):
             refresh.expected_schemas({"items": [crd("../evil", "Kind", ["v1"])]})
+        for group in (".", ".."):
+            with self.subTest(group=group), self.assertRaisesRegex(RuntimeError, "Unsafe group"):
+                refresh.expected_schemas({"items": [crd(group, "Kind", ["v1"])]})
         with self.assertRaisesRegex(RuntimeError, "Unsafe kind"):
             refresh.expected_schemas({"items": [crd("a.io", "Task/Template", ["v1"])]})
         with self.assertRaisesRegex(RuntimeError, "Unsafe version"):
