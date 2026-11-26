@@ -1,3 +1,4 @@
+import errno
 import importlib.util
 import json
 import shutil
@@ -6,9 +7,9 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 import jsonschema
-
 
 ROOT = Path(__file__).parents[2]
 spec = importlib.util.spec_from_file_location("refresh", ROOT / "Utilities/refresh.py")
@@ -35,6 +36,8 @@ class RefreshTests(unittest.TestCase):
             root = Path(directory)
             (root / "stale.example.com").mkdir()
             (root / "stale.example.com/old_v1.json").write_text("{}")
+            (root / "external-secrets.io").mkdir()
+            (root / "external-secrets.io/secretstore_v1.json").write_text("{}")
             (root / "Utilities").mkdir()
             (root / ".github").mkdir()
             tree = refresh.convert(snapshot, Path(work))
@@ -208,6 +211,59 @@ class RefreshTests(unittest.TestCase):
                 self.assertEqual(old_schema.read_text(), original)
                 self.assertEqual(result.stderr.strip(),
                                  f"Stopped: Refusing to overwrite schema destination: {destination}")
+
+    def test_staging_failure_preserves_existing_catalog(self):
+        self.assert_publish_preserves_existing_catalog("staging")
+
+    def test_switch_failure_restores_existing_catalog(self):
+        self.assert_publish_preserves_existing_catalog("switch")
+
+    def assert_publish_preserves_existing_catalog(self, failure):
+        with tempfile.TemporaryDirectory() as directory, tempfile.TemporaryDirectory() as work:
+            root = Path(directory)
+            original = {
+                "current.example/widget_v1.json": b'{"description": "local edit"}\n',
+                "current.example/notes/local.txt": b"keep these notes\n",
+                "stale.example/old_v1.json": b'{"description": "old group"}\n',
+                "README.md": b"catalog\n",
+            }
+            for filename, contents in original.items():
+                path = root / filename
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(contents)
+            tree = refresh.convert({"items": [
+                crd("current.example", "Widget", ["v1"]),
+                crd("new.example", "Widget", ["v1"]),
+            ]}, Path(work))
+            copytree, rename = shutil.copytree, Path.rename
+            error = OSError(errno.ENOSPC, f"injected {failure} failure")
+
+            def copy_group(source, destination):
+                copytree(source, destination)
+                if source.name == "new.example":
+                    raise error
+
+            def switch_group(source, destination):
+                if destination == root / "new.example":
+                    self.assertEqual((root / "current.example/widget_v1.json").read_bytes(),
+                                     (tree / "current.example/widget_v1.json").read_bytes())
+                    with self.assertRaisesRegex(RuntimeError, "Refresh workspace already exists"):
+                        refresh.publish(tree, root)
+                    raise error
+                return rename(source, destination)
+
+            if failure == "staging":
+                inject_failure = patch.object(shutil, "copytree", side_effect=copy_group)
+            else:
+                inject_failure = patch.object(Path, "rename", autospec=True,
+                                              side_effect=switch_group)
+            with inject_failure, self.assertRaises(OSError) as raised:
+                refresh.publish(tree, root)
+            self.assertIs(raised.exception, error)
+            self.assertEqual({str(path.relative_to(root)): path.read_bytes()
+                              for path in root.rglob("*") if path.is_file()}, original)
+            self.assertEqual({path.name for path in root.iterdir()},
+                             {"README.md", "current.example", "stale.example"})
 
     def test_exports_only_served_versions_with_their_own_schemas(self):
         item = crd("example.io", "Widget", ["v1beta1", "v1", "v2"])

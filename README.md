@@ -35,8 +35,10 @@ directory whose name contains a dot, so removed CRDs disappear too. Do not keep
 unrelated files in those directories. `--input crds.json` reads a saved
 `kubectl get crds -o json` instead of contacting the cluster; it still replaces
 the catalog directories. An empty snapshot, a missing schema, or a duplicate
-output name stops the export before publication. Publication itself removes the
-old directories before copying the replacements.
+output name stops the export before publication. Publication stages replacements
+on the catalog filesystem and keeps the old directories until the switch succeeds.
+If a switch fails, it restores the old directories. If restoration is incomplete,
+the error gives the path to the retained workspace for recovery.
 
 `Utilities/openapi2jsonschema.py` comes from kubeconform through
 datreeio/CRDs-catalog, with a fix that only descends into subschemas, so

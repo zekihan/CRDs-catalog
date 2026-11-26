@@ -91,20 +91,63 @@ def convert(snapshot, workdir):
 
 
 def publish(tree, root):
-    existing = schema_dirs(root)
-    replacements = sorted(tree.iterdir())
-    for directory in existing:
-        if directory.is_symlink():
-            raise RuntimeError(f"Refusing symlink schema directory: {directory}")
-    for directory in replacements:
-        destination = root / directory.name
-        if destination not in existing and os.path.lexists(destination):
-            raise RuntimeError(f"Refusing to overwrite schema destination: {destination}")
+    workspace = root / ".crds-refresh"
+    try:
+        workspace.mkdir(mode=0o700)
+    except FileExistsError as error:
+        raise RuntimeError(f"Refresh workspace already exists: {workspace}. "
+                           "A refresh is running or needs recovery.") from error
 
-    for directory in existing:
-        shutil.rmtree(directory)
-    for directory in replacements:
-        shutil.copytree(directory, root / directory.name)
+    staged = workspace / "staged"
+    originals = workspace / "originals"
+    cleanup = True
+    try:
+        existing = schema_dirs(root)
+        replacements = sorted(tree.iterdir())
+        for directory in existing:
+            if directory.is_symlink():
+                raise RuntimeError(f"Refusing symlink schema directory: {directory}")
+        for directory in replacements:
+            destination = root / directory.name
+            if destination not in existing and os.path.lexists(destination):
+                raise RuntimeError(f"Refusing to overwrite schema destination: {destination}")
+
+        staged.mkdir()
+        originals.mkdir()
+        for directory in replacements:
+            shutil.copytree(directory, staged / directory.name)
+
+        undo = []
+        cleanup = False
+        try:
+            for directory in sorted(existing):
+                backup = originals / directory.name
+                directory.rename(backup)
+                undo.append((backup, directory))
+            for directory in replacements:
+                replacement = staged / directory.name
+                destination = root / directory.name
+                replacement.rename(destination)
+                undo.append((destination, replacement))
+        except BaseException as error:
+            failures = []
+            for source, destination in reversed(undo):
+                try:
+                    source.rename(destination)
+                except OSError as failure:
+                    failures.append(str(failure))
+            if failures:
+                raise RuntimeError(f"Catalog rollback incomplete. Recover from {workspace}. "
+                                   f"Failed moves: {', '.join(failures)}") from error
+            cleanup = True
+            raise
+        cleanup = True
+    finally:
+        if cleanup:
+            try:
+                shutil.rmtree(workspace)
+            except OSError as error:
+                print(f"Could not clean up refresh workspace {workspace}: {error}", file=sys.stderr)
 
 
 def main():
